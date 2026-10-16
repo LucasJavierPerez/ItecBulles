@@ -29,3 +29,24 @@ server rendering adds nothing. `nuxt generate` still produces a static site that
 - `app/app.vue` — app shell; one section per step (the 3D scene arrives in later tasks).
 - `app/assets/css/main.css` — Tailwind v4 tokens (`@theme`): Bulles palette, sky gradient, easings, `btn-pill`.
 - `tests/` — Vitest specs.
+
+## Bubble illustrations
+
+Each bubble shows a flat illustration derived from a photo on the official site. There is no image model:
+a deterministic `sharp` script stylizes the photos.
+
+- `assets/photos/<offer-id>.<ext>` — the official photos (large PNGs re-encoded as JPEG q92).
+- `assets/photos/sources.json` — per offer: photo `url`, the `page` it appears on, the square `crop` used
+  (chosen to avoid text baked into banners), and a `note`. `generic: true` marks offers whose page has no
+  photo of its own and reuse another official photo.
+- `scripts/illustrate.mjs` — crop → median simplification → luminance bands mapped to the Bulles palette →
+  Sobel ink outlines → seeded paper grain → `public/bubbles/<offer-id>.webp` (1024×1024).
+
+```bash
+npm run illustrate                                   # regenerate public/bubbles/*.webp
+node scripts/contact-sheet.mjs /tmp/contact-sheet.png  # review all illustrations masked in circles
+```
+
+To change a photo, replace the file in `assets/photos/`, update its `sources.json` entry (url, page, crop),
+run `npm run illustrate`, and update the offer's `imageAlt` in `app/data/content.js` to describe it.
+The signed `googleusercontent.com` URLs may expire; the committed originals are the reproducible input.

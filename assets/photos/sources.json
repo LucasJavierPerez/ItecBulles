@@ -1,0 +1,145 @@
+{
+  "ingreso-2027": {
+    "file": "ingreso-2027.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sgBy0DSJycqLwfSUMDt9pOOqYb0aUd3Z6tPRMmHPt0MIcBv9qMf8mxMYm6oJiou2zytgwyDZ3FZUQ5juGNGb5aEL_GGPzD49L-QaYk4ediPBJY7o4CHUT8xJ0VbQCxRBw_mgIN3MC7jHy9TA9YKezBfmxPgD25RHC-GBZBtNZTgx9cF0pLfWKE=w16383",
+    "page": "https://www.itecriocuarto.org.ar/inicio",
+    "generic": false,
+    "crop": {
+      "left": 540,
+      "top": 0,
+      "size": 1080
+    },
+    "note": "Front of the iTec building (home page header). Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "retrieved": "2026-10-16"
+  },
+  "desarrollo-de-software": {
+    "file": "desarrollo-de-software.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uPPybFAnq6jEwMdGlsdrku5la38paoTULIHsJSu_ffwT5GO-v1O1hyRt-FpJAFea-2IzW43ttOHhyTyZb_yaBSS4XAauyzFq8opH-HF2CeZF6cD6gUuAcTf_Ddw8iEpK6SIrmp_xWSOxuVrT9KdAaQ34G9SVIgqWBzpt8YDc95NWUzpGQ6qQ=w16383",
+    "page": "https://www.itecriocuarto.org.ar/carreras/software",
+    "generic": false,
+    "crop": {
+      "left": 200,
+      "top": 0,
+      "size": 500
+    },
+    "note": "Laptop with code on a desk (career page header); crop avoids the overlaid title. Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "retrieved": "2026-10-16"
+  },
+  "inteligencia-artificial": {
+    "file": "inteligencia-artificial.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vgpd9CYB_kAZ_lRRmwEr2M5dyQu_dkB6_uddeGA80XPRAiOCOZZTvIB582oxtxnB4E1V_5J9HrSsVi_YNGRmsTdxLkZ-721Pf4S9MP9MneI_g7-1PN9PaMSz2ZSIkA-ZUpMPOC6mwnhU44QhRgPdGSqfRWQo72nEbnHi_pyw9AeW-fX_LHEQ=w16383",
+    "page": "https://www.itecriocuarto.org.ar/carreras/inteligencia-artificial",
+    "generic": false,
+    "crop": {
+      "left": 1240,
+      "top": 0,
+      "size": 500
+    },
+    "note": "Circuit-board head with glowing AI letters (career page header).",
+    "retrieved": "2026-10-16"
+  },
+  "mecatronica": {
+    "file": "mecatronica.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uEISzegbxrzn4yFwl5TAc1yiLCrdoYeCoec6jAw4YLQURXU5Xk5D15gvuqE2LgpYa2Rbsw3-EZJczBug_-QmyJoi_58ybYcUWoYrdVwoLEg5uNHTea1iaMyu7Dq-8VMg_gFhz707XN3NSzfmfjOACx2NH9HJTjo4FGPU-26ug0K2mLhFZnlA5B=w16383",
+    "page": "https://www.itecriocuarto.org.ar/carreras/mecatronica",
+    "generic": false,
+    "crop": {
+      "left": 0,
+      "top": 460,
+      "size": 620
+    },
+    "note": "Hands holding a control tablet next to industrial machinery (career page header).",
+    "retrieved": "2026-10-16"
+  },
+  "marketing-digital": {
+    "file": "marketing-digital.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tjn-hGaxwoIt66282FoIGfvzqiaAx6Pz4aNlWpHe3dZXvkVcOFWEuUf8aKaRUpG1y1i06RNnsmGFRM5JxsOdXNuy9Bn2D-YNWAlc86kt9gdE-imPCvCIgU_ZV_KgPAn3F_VZq1SWfTq-xhCl5Ls8z49ylbm_-zwGe6Y8OSBDXvqOmWlqYzMrt6=w1280",
+    "page": "https://www.itecriocuarto.org.ar/carreras/marketing-digital",
+    "generic": false,
+    "crop": {
+      "left": 213,
+      "top": 0,
+      "size": 853
+    },
+    "note": "Desk with laptop, phone, notebook and sticky notes (career page body).",
+    "retrieved": "2026-10-16"
+  },
+  "turismo-y-hoteleria": {
+    "file": "turismo-y-hoteleria.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sU2IrRVYQF1O3D7ZPrOiOp1XxnfajCshukI5RtKxXpHuGM2D49yKLLRiopKnfTFB8OstKK6U_EYVRV-Tt14Yz0ClbpSLoqF1dpAIofUEOqa_ZxaW9IWwic2g5FiCZjOLfOPaC2I7eZpGzdjxKoX7ujRe4nTD9dz-RwPAfV9eheJRXHQDzJ0vqz=w16383",
+    "page": "https://www.itecriocuarto.org.ar/carreras/turismo",
+    "generic": false,
+    "crop": {
+      "left": 0,
+      "top": 520,
+      "size": 560
+    },
+    "note": "Travel still life with camera and map (career page header).",
+    "retrieved": "2026-10-16"
+  },
+  "operario-electromecanico": {
+    "file": "operario-electromecanico.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72v9bMrGMlIV5xQpOVhr0WTiVWV26Tq2TstGWyA68KYSAiTdtrrT3AAvIYCxztaGL_KXXouLyxpENXdR2a6ACDuShqTCPRXur9mKjubZ2SSeU25dbEQXHVkKCRzwBczsQkb7N4fM1bx2oVosI2AGHKuAQH_duNt9nAkMEXxXa581iuugBx_zj4In=w16383",
+    "page": "https://www.itecriocuarto.org.ar/trayectos/Operario_electromecanico",
+    "generic": false,
+    "crop": {
+      "left": 1460,
+      "top": 250,
+      "size": 460
+    },
+    "note": "Industrial robotic machinery (trayecto page header); crop avoids the overlaid title. Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "retrieved": "2026-10-16"
+  },
+  "secundario-ada-byron": {
+    "file": "secundario-ada-byron.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tiK6xXcS7zg6nnhGxfbLNcn68iyKxj8PsVvU7mIQ0uZtCQPvl3GOgFhy9k0xfYdIpV-9EkPnuSp0RUBYhlE-m6MtYtMh8c22JSs3h2kRKdoh6jrvFq_IYzG2Xp93LnNgmCJ7Vg5LQDM08g_3cgHJbQ0OGQUfc7NB1FYzWYyf430laNPbaEmOcSDUqNBJAG8GgHxk4pWNaiSHzZVwSfaAZlNwsaIjRIpb7Z=w1280",
+    "page": "https://www.itecriocuarto.org.ar/adabyron",
+    "generic": false,
+    "crop": {
+      "left": 560,
+      "top": 0,
+      "size": 568
+    },
+    "note": "Entrance of the iTec building as shown on the Ada Byron page. Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "retrieved": "2026-10-16"
+  },
+  "capacitacion-continua": {
+    "file": "capacitacion-continua.png",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tkyVL6lyDd_F8K-HwO8lZMVy0i134jvmCADfbNdHYx1H_BzQ7zl0ycE8amN73MGkh4J6TjSQUX72K9lgNOUS8boEe5wS2R8_O595vUeCCiz0esWRnvY2Ecl16pOJYZxDwjoE72Q_zmHcIsf0OdHhM-OUpQWTB7HuvXyBHubT72ZbxUlYmUNZM6hJTioB278bspsnUIjeY_qomIKkc2KZHI9iITNaV6e7-BsbbfUSI=w1280",
+    "page": "https://cursos.itecriocuarto.org.ar",
+    "generic": false,
+    "crop": {
+      "left": 1050,
+      "top": 340,
+      "size": 230
+    },
+    "note": "Front of the iTec building, from the photo inside the PCC In Company flyer on the course portal (low resolution source).",
+    "retrieved": "2026-10-16"
+  },
+  "itec-labs": {
+    "file": "itec-labs.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uPPybFAnq6jEwMdGlsdrku5la38paoTULIHsJSu_ffwT5GO-v1O1hyRt-FpJAFea-2IzW43ttOHhyTyZb_yaBSS4XAauyzFq8opH-HF2CeZF6cD6gUuAcTf_Ddw8iEpK6SIrmp_xWSOxuVrT9KdAaQ34G9SVIgqWBzpt8YDc95NWUzpGQ6qQ=w16383",
+    "page": "https://www.itecriocuarto.org.ar/carreras/software",
+    "generic": true,
+    "crop": {
+      "left": 160,
+      "top": 740,
+      "size": 340
+    },
+    "note": "GENERIC: the iTec Labs page shows only a logo, so this reuses the Desarrollo de Software header photo (hand-drawn flowchart on paper). Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "retrieved": "2026-10-16"
+  },
+  "portal-de-trabajo": {
+    "file": "portal-de-trabajo.jpg",
+    "url": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72spF1Cv8JN4_4eBrQ4yYauMcrrwXYvaGD-B04udZiZv1lA21AKIBmcVsh0C0GDNtljnQVpFkvVAP2_SECsQfP3FuqvjIbk4adDx_XQ0QknjUKsMXxnVMG7t7u9UUavALEGP1nh08jcf2AVAVPDqJsk=w16383",
+    "page": "https://www.itecriocuarto.org.ar/bolsadetrabajo",
+    "generic": false,
+    "crop": {
+      "left": 100,
+      "top": 0,
+      "size": 1067
+    },
+    "note": "Desk with laptops and coffee (job portal page header).",
+    "retrieved": "2026-10-16"
+  }
+}
