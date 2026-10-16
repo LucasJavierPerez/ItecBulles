@@ -35,7 +35,7 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - [x] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
 - [x] T6 Sound + accessibility: Howler ambience/hover/click with mute and first-gesture unlock; DOM list fallback with keyboard, reduced-motion static mode, no-WebGL fallback, practical info always reachable. Route: delegated.
 - [x] T8 Bubble illustrations (runs before T4): download official photos per offer, `scripts/illustrate.mjs` with sharp produces `public/bubbles/<offer-id>.webp` (square, circular-safe), `image` + `imageSource` fields in content.js, tests that every offer has an existing illustration. Route: delegated.
-- [ ] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
+- [x] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 
 ## Acceptance criteria
 - `npm test` and `npm run build` pass.
@@ -99,7 +99,7 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
   - Size: ~1550 changed lines over two commits (≈520 test lines, ≈190 CSS, sound script ≈180); over the advisory heuristic, kept as two work units (sound / a11y).
   - Deviation: practical info is a fixed footer bar (contacts always visible) plus a drawer that is open by default only on the home screen, to avoid covering the bubbles; campuses/hours need one tap outside home. Mute button label changes with state as requested, alongside `aria-pressed`.
   - Not verified: audible result, Howler unlock in real browsers, footer/list layout overlap at 390 px, focus visibility on the sky — pending T7. Risk tier: medium (writer self-verification).
-- T7 browser-check fixes · commit `fix: resolve layout overlaps found in browser check` (hash: HASH_PENDING). Route: delegated writer (2+ non-trivial files). T7 itself stays open until the parent re-runs the browser check.
+- T7 browser-check fixes · commit `fix: resolve layout overlaps found in browser check` (hash: `b7cc0ae`). Route: delegated writer (2+ non-trivial files). T7 itself stays open until the parent re-runs the browser check.
   - Footer drawer: `app/data/layout.js` `defaultInfoExpanded(step, {width, height})` → open only on home with width ≥ 768 and height ≥ 700; phones always start with the compact bar (two lines: phone + email, then the two WhatsApp lines; "Tel."/"WhatsApp" prefixes and the h2 are sr-only below 768 px, toggle shows "Sedes"). `PracticalInfo` publishes its height as `--practical-info-height` (ResizeObserver); `main`, the detail overlay and "Saltar intro" pad / sit above it, so the hero CTA is never covered.
   - Detail composition: `BubbleDetail` prop `sceneActive` → no HTML `.detail-orb` (the 3D bubble is the only bubble); static mode keeps the orb in the same stage. Layout = copy column (kind, title, summary ≤ 65ch, CTA, links, cards) + visual stage: desktop grid 1.25fr / 1fr with the stage on the right, phones stage on top and copy on a cream surface. `getCameraState('BUBBLE', aspect)` frames the opened bubble (row y 0.35) at NDC x 0.5 on wide screens and y 0.4 on portrait (`bubbleScreenAnchor`); `Experience.goTo` passes `camera.aspect` and re-frames a settled BUBBLE view on resize.
   - Cards: `auto-fill minmax(min(100%, 13.75rem), 1fr)` grid inside the copy column (two ~290 px columns at 1440 px), max 65ch, drift kept, single column on phones.
@@ -110,4 +110,11 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - Scope change (user, 2026-10-16): T2–T4 paused; stack and UI to be re-planned after a deeper study of experience.projetbulles.com (likely Nuxt/Vue + WebGL). Minimal Vite scaffold from T1 may be replaced.
 
 ## Next step
-T1–T6 and T8 done. T7: visible browser check at 1440/390 px (shaders, carousel feel, sound unlock/mute, OfferList keyboard flow, footer/drawer overlap with bubbles, detail and tutorial, reduced-motion toggle, focus visibility), bitácora entry.
+Feature tasks done. Pending: illustration style polish; user confirmation of D-02, D-03, D-05, D-06 and of practical-info drawer reading; PR to main is the user's decision.
+
+Previous: T1–T6 and T8 done. T7: visible browser check at 1440/390 px (shaders, carousel feel, sound unlock/mute, OfferList keyboard flow, footer/drawer overlap with bubbles, detail and tutorial, reduced-motion toggle, focus visibility), bitácora entry.
+
+- T7 done (parent, inline). Browser check of the production build with headless Chrome (playwright-core + swiftshader WebGL; automated visible tabs report `visibilityState: hidden` so rAF stops) at 1440×900, 390×844 and reduced motion: home → intro → overworld → drag → open bubble → Esc back.
+  - First pass found 5 defects (mobile drawer covering CTA, 3D bubble under detail text + duplicated illustration, narrow info cards, tutorial covering CTA, loader overlay stuck in hidden tabs). Fixed by delegated writer in `b7cc0ae`; second pass: all flows complete, no overlaps, no app console errors (only static-server connection resets).
+  - `npm test`: 20 files, 187 passed. `npm run build`: OK.
+  - Not verified: audible sound (headless), carousel feel on a real GPU, screen-reader announcements. Illustration style polish deferred (user, 2026-10-16).
