@@ -134,3 +134,30 @@ describe('TutorialHint', () => {
     expect(el.querySelector('[role="status"]')).not.toBeNull();
   });
 });
+
+describe('BubbleDetail composition (T7 fixes)', () => {
+  it('drops the HTML illustration when the 3D bubble is on screen', () => {
+    const el = mount(BubbleDetail, { offer: mecatronica, sceneActive: true });
+    expect(el.querySelector('.detail-orb')).toBeNull();
+    expect(el.querySelector('.bubble-detail').classList.contains('has-scene')).toBe(true);
+  });
+
+  it('keeps the HTML illustration in static mode', () => {
+    const el = mount(BubbleDetail, { offer: mecatronica, sceneActive: false });
+    expect(el.querySelector('.detail-orb img').getAttribute('src')).toBe(mecatronica.image);
+  });
+
+  it('renders the hint slot right after the back button, before the title', () => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+    app = createApp({
+      render: () => h(BubbleDetail, { offer: mecatronica }, { hint: () => h('p', { 'data-hint': '' }, 'Tip') }),
+    });
+    app.mount(root);
+    const hint = root.querySelector('[data-hint]');
+    const close = root.querySelector('[data-action="close"]');
+    const title = root.querySelector('#bubble-title');
+    expect(close.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(hint.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});

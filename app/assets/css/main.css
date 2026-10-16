@@ -155,27 +155,80 @@
     0 14px 40px rgb(40 11 60 / 0.18);
 }
 
+/* Detail layout: a readable copy column and a visual stage. Phones: stage on top
+   (3D bubble or HTML illustration), copy below on a cream surface. Desktop: copy
+   on the left (~55%), stage on the right where the BUBBLE camera frames the bubble. */
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-stage {
+  order: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bubble-detail.has-scene .detail-stage {
+  /* Room for the opened 3D bubble, framed in the upper part of the screen. */
+  min-height: 32dvh;
+}
+
+.detail-copy {
+  min-width: 0;
+  border-radius: 1.75rem;
+  padding: 1.25rem;
+  background-color: rgb(255 250 237 / 0.72);
+  box-shadow: 0 10px 30px rgb(40 11 60 / 0.1);
+}
+
+.detail-summary {
+  max-width: 65ch;
+}
+
 @media (min-width: 1024px) {
-  .detail-orb {
-    width: 14rem;
-    height: 14rem;
+  .detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
   }
 
-  /* Items become grid children so they can sit on both sides of the center. */
-  .detail-items {
-    display: contents;
+  .detail-stage {
+    order: 0;
+    position: sticky;
+    top: 6rem;
+    min-height: 22rem;
+  }
+
+  .bubble-detail.has-scene .detail-stage {
+    min-height: 22rem;
+  }
+
+  .detail-copy {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .detail-orb {
+    width: 16rem;
+    height: 16rem;
   }
 }
 
 .detail-items {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  align-items: start;
   gap: 1rem;
 }
 
 .detail-item {
   position: relative;
-  max-width: 26rem;
-  justify-self: center;
+  max-width: 65ch;
   border-radius: 1.5rem;
   padding: 1rem 1.25rem;
   background-color: rgb(255 250 237 / 0.88);
@@ -212,6 +265,31 @@
 @media (prefers-reduced-motion: reduce) {
   .detail-item {
     animation: none;
+  }
+}
+
+/* Scene loader overlay (SceneLoader.js): fades with a class, removed by a timer. */
+.scene-loader {
+  transition: opacity 700ms var(--ease-standard);
+}
+
+.scene-loader.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-dot {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, var(--color-cream), var(--color-lilac) 60%, transparent 72%);
+  box-shadow: inset 0 0 0 2px rgb(255 250 237 / 0.7);
+  animation: loader-float 1.6s var(--ease-standard) infinite alternate;
+}
+
+@keyframes loader-float {
+  to {
+    transform: translateY(-0.75rem) scale(1.08);
   }
 }
 
@@ -388,13 +466,28 @@ main:focus:not(:focus-visible) {
   font-weight: 500;
 }
 
-/* Keep floating UI above the footer bar. */
-.tutorial-hint {
-  bottom: 7rem;
+/* Keep scrollable overlays clear of the footer bar (height measured by PracticalInfo). */
+.bubble-detail {
+  padding-bottom: calc(var(--practical-info-height, 4rem) + 1.5rem);
 }
 
-.bubble-detail {
-  padding-bottom: 8rem;
+/* Phones: the compact bar is two short lines (contacts, then the toggle). */
+@media (max-width: 767px) {
+  .practical-info__bar {
+    gap: 0.25rem 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .practical-info__contacts {
+    gap: 0.125rem 0.75rem;
+  }
+
+  .practical-info__bar .settings-pill {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+  }
 }
 
 /* "Reducir movimiento" toggle: same effect as prefers-reduced-motion. */

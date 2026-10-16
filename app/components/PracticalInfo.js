@@ -1,8 +1,10 @@
 // Persistent "Información práctica" footer: phone, email and WhatsApp are always on
 // screen as selectable text + links; the drawer adds campuses with their published
 // hours, socials and the links for current students (D-05: SiTec as a plain link,
-// no login UI, D-01). The parent opens the drawer by default on the home screen.
-import { defineComponent, h } from 'vue';
+// no login UI, D-01). The parent opens the drawer by default only on the desktop
+// home screen (see data/layout.js). Its rendered height is published as the
+// `--practical-info-height` CSS variable so the UI above can keep clear of it.
+import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
 import { campuses, contacts, links } from '../data/content.js';
 
 const PANEL_ID = 'practical-info-panel';
@@ -31,11 +33,32 @@ export default defineComponent({
   },
   emits: ['update:expanded'],
   setup(props, { emit }) {
+    const footer = ref(null);
+    let observer = null;
+    const publishHeight = () => {
+      const height = footer.value?.offsetHeight ?? 0;
+      document.documentElement.style.setProperty('--practical-info-height', `${height}px`);
+    };
+    onMounted(() => {
+      publishHeight();
+      if (typeof ResizeObserver === 'function' && footer.value) {
+        observer = new ResizeObserver(publishHeight);
+        observer.observe(footer.value);
+      }
+    });
+    onBeforeUnmount(() => {
+      observer?.disconnect();
+      document.documentElement.style.removeProperty('--practical-info-height');
+    });
+
+    // Phones keep the bar to two short lines: prefixes stay for screen readers only.
+    const phoneHidden = (text) => h('span', { class: 'max-md:sr-only' }, text);
+
     const column = (title, children) =>
       h('div', { class: 'practical-info__column' }, [h('h3', { class: 'practical-info__subtitle' }, title), ...children]);
 
     return () =>
-      h('footer', { class: 'practical-info', 'aria-labelledby': 'practical-info-title' }, [
+      h('footer', { ref: footer, class: 'practical-info', 'aria-labelledby': 'practical-info-title' }, [
         h(
           'div',
           {
@@ -67,13 +90,22 @@ export default defineComponent({
           ],
         ),
         h('div', { class: 'practical-info__bar' }, [
-          h('h2', { id: 'practical-info-title', class: 'practical-info__title' }, 'Información práctica'),
+          h(
+            'h2',
+            { id: 'practical-info-title', class: 'practical-info__title max-md:sr-only' },
+            'Información práctica',
+          ),
           h('p', { class: 'practical-info__contacts' }, [
-            h('span', ['Tel. ', link(contacts.phone.href, contacts.phone.display)]),
+            h('span', [phoneHidden('Tel. '), link(contacts.phone.href, contacts.phone.display)]),
             h('span', [link(contacts.email.href, contacts.email.address)]),
-            ...contacts.whatsapp.map((line) =>
-              h('span', [`WhatsApp ${line.label.replace('Informes de ', '')}: `, link(line.url, line.display, true)]),
-            ),
+            ...contacts.whatsapp.map((line) => {
+              const topic = line.label.replace('Informes de ', '');
+              return h('span', [
+                phoneHidden('WhatsApp '),
+                `${topic.charAt(0).toUpperCase()}${topic.slice(1)}: `,
+                link(line.url, line.display, true),
+              ]);
+            }),
           ]),
           h(
             'button',
@@ -84,7 +116,14 @@ export default defineComponent({
               'aria-controls': PANEL_ID,
               onClick: () => emit('update:expanded', !props.expanded),
             },
-            props.expanded ? 'Ocultar sedes y horarios' : 'Sedes, horarios y alumnos',
+            [
+              h(
+                'span',
+                { class: 'max-md:sr-only' },
+                props.expanded ? 'Ocultar sedes y horarios' : 'Sedes, horarios y alumnos',
+              ),
+              h('span', { class: 'md:hidden', 'aria-hidden': 'true' }, props.expanded ? 'Ocultar' : 'Sedes'),
+            ],
           ),
         ]),
       ]);

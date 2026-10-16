@@ -183,7 +183,9 @@ export class Experience {
   goTo(name, { duration = 1.6, immediate = false } = {}) {
     this.cancelIntro();
     this.cameraTween?.kill();
-    const to = getCameraState(name);
+    this.cameraStateName = name;
+    // BUBBLE is framed for the viewport (bubble on the right / at the top).
+    const to = getCameraState(name, this.camera.aspect);
     if (immediate) {
       this.cameraBase = to;
       this.applyCamera();
@@ -427,6 +429,11 @@ export class Experience {
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+    // Re-frame a settled BUBBLE view when the viewport changes shape.
+    if (this.cameraStateName === 'BUBBLE' && !this.cameraTween?.isActive()) {
+      this.cameraBase = getCameraState('BUBBLE', this.camera.aspect);
+      this.applyCamera();
+    }
     this.skyMaterial.uniforms.uResolution.value.set(width * ratio, height * ratio);
   }
 

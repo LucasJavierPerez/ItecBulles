@@ -10,6 +10,7 @@ import MotionToggle from '~/components/MotionToggle.js';
 import OfferList from '~/components/OfferList.js';
 import PracticalInfo from '~/components/PracticalInfo.js';
 import { announcementFor } from '~/data/announcements.js';
+import { defaultInfoExpanded } from '~/data/layout.js';
 import { sceneEvents } from '~/scene/events.js';
 import { createSoundManager } from '~/audio/soundManager.js';
 import { connectSound } from '~/audio/connectSound.js';
@@ -21,11 +22,13 @@ let disconnectSound = null;
 let sound = null;
 const syncMotion = () => ui.applySystemReducedMotion(motionQuery.matches);
 
-// Practical info drawer: open on the home screen, compact bar elsewhere.
-const infoExpanded = ref(true);
+// Practical info drawer: open on the desktop home screen only, compact bar on
+// phones and on every other step (it must never cover the hero CTA).
+const infoExpanded = ref(false);
+const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
 watch(
   () => ui.currentStep,
-  (step) => (infoExpanded.value = step === 'home'),
+  (step) => (infoExpanded.value = defaultInfoExpanded(step, viewport())),
 );
 
 // Polite screen-reader announcement of every step / offer change.
@@ -65,6 +68,7 @@ watch(
 );
 
 onMounted(() => {
+  infoExpanded.value = defaultInfoExpanded(ui.currentStep, viewport());
   ui.hydrateTutorials();
   ui.hydratePreferences();
   // Howls are created lazily on the first gesture (see soundManager.js).
@@ -99,7 +103,8 @@ onBeforeUnmount(() => {
     <main
       id="contenido"
       tabindex="-1"
-      class="pointer-events-none relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center [&>section]:pointer-events-auto"
+      class="pointer-events-none relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pt-20 text-center [&>section]:pointer-events-auto"
+      style="padding-bottom: calc(var(--practical-info-height, 4rem) + 1.5rem)"
     >
       <h1 v-if="ui.currentStep !== 'home'" class="sr-only">{{ institution.name }} · Propuestas educativas</h1>
 
@@ -118,7 +123,8 @@ onBeforeUnmount(() => {
       <section
         v-else-if="ui.currentStep === 'intro'"
         aria-label="Introducción"
-        class="fixed right-6 bottom-6 sm:right-10 sm:bottom-10"
+        class="fixed right-6 sm:right-10"
+        style="bottom: calc(var(--practical-info-height, 4rem) + 1.5rem)"
       >
         <!-- The camera intro plays in the canvas; skipping jumps to the bubbles. -->
         <button type="button" class="btn-pill" @click="ui.skipIntro()">Saltar intro</button>
@@ -127,7 +133,7 @@ onBeforeUnmount(() => {
       <section
         v-else-if="ui.currentStep === 'overworld' && ui.sceneActive"
         aria-labelledby="overworld-title"
-        class="fixed inset-x-0 top-8 px-6"
+        class="fixed inset-x-0 top-20 px-6 sm:top-8"
         style="pointer-events: none"
       >
         <!-- WebGL bubbles live in the canvas. OfferList is the keyboard / screen-reader
@@ -135,11 +141,23 @@ onBeforeUnmount(() => {
         <h2 id="overworld-title" class="text-3xl font-bold sm:text-4xl">Propuestas</h2>
         <p class="mt-2 text-base">Arrastrá o usá la rueda para explorar. Tocá una burbuja para entrar.</p>
         <OfferList :offers="offers" @open="ui.openBubble" @focus="ui.focusBubble" />
+        <TutorialHint
+          v-if="tutorial?.name === 'overworld'"
+          class="mt-4"
+          :message="tutorial.message"
+          @dismiss="ui.completeTutorial('overworld')"
+        />
       </section>
 
       <section v-else-if="ui.currentStep === 'overworld'" aria-labelledby="overworld-title" class="py-16">
         <!-- Static mode (no WebGL or reduced motion): CSS bubbles with the illustrations. -->
         <h2 id="overworld-title" class="mb-8 text-4xl font-bold">Propuestas</h2>
+        <TutorialHint
+          v-if="tutorial?.name === 'overworld'"
+          class="mb-8"
+          :message="tutorial.message"
+          @dismiss="ui.completeTutorial('overworld')"
+        />
         <StaticBubbleGrid :offers="offers" @open="ui.openBubble" />
       </section>
 
@@ -148,16 +166,15 @@ onBeforeUnmount(() => {
         v-else-if="ui.currentStep === 'bubble' && ui.activeOffer"
         :offer="ui.activeOffer"
         :reduced-motion="ui.reducedMotion"
+        :scene-active="ui.sceneActive"
         @close="ui.closeBubble()"
         @navigate="ui.switchBubble"
-      />
-
-      <TutorialHint
-        v-if="tutorial"
-        :key="tutorial.name"
-        :message="tutorial.message"
-        @dismiss="ui.completeTutorial(tutorial.name)"
-      />
+      >
+        <!-- Tutorials sit in the flow, never over a primary action. -->
+        <template v-if="tutorial?.name === 'bubble'" #hint>
+          <TutorialHint :message="tutorial.message" @dismiss="ui.completeTutorial('bubble')" />
+        </template>
+      </BubbleDetail>
     </main>
 
     <PracticalInfo v-model:expanded="infoExpanded" />

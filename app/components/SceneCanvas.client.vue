@@ -11,7 +11,7 @@ import { isWebGLAvailable } from '~/scene/renderSettings.js';
 import { sceneEvents, SCENE_EVENTS } from '~/scene/events.js';
 import { offers } from '~/data/content.js';
 import { tintFor } from '~/data/detail.js';
-import SceneLoader from '~/components/SceneLoader.vue';
+import SceneLoader from '~/components/SceneLoader.js';
 
 const ui = useUiStore();
 const canvas = ref(null);

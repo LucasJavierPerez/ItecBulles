@@ -21,9 +21,35 @@ const STEP_PLANS = {
   bubble: { mode: 'tween', state: 'BUBBLE' },
 };
 
-export function getCameraState(name) {
+// Must match the PerspectiveCamera in Experience.js.
+const FOV_DEGREES = 45;
+
+// Where the opened bubble (centered at the BUBBLE target: x = 0, row height y = 0.35) should land on screen in BUBBLE
+// mode, in normalized device coordinates (-1..1, y up): on the right half on wide
+// screens, so the detail text gets its own column on the left; in the upper part
+// on portrait screens, with the text below it.
+export function bubbleScreenAnchor(aspect) {
+  return aspect >= 1 ? { x: 0.5, y: 0 } : { x: 0, y: 0.4 };
+}
+
+// BUBBLE framing for a viewport aspect: shift camera and target together so the
+// bubble at the table target projects onto bubbleScreenAnchor(aspect).
+function framedBubbleState(aspect) {
+  const { position, target } = CAMERA_STATES.BUBBLE;
+  const distance = position[2] - target[2];
+  const halfHeight = distance * Math.tan(((FOV_DEGREES / 2) * Math.PI) / 180);
+  const anchor = bubbleScreenAnchor(aspect);
+  const x = target[0] - anchor.x * halfHeight * aspect;
+  const y = target[1] - anchor.y * halfHeight;
+  return { position: [x, y, position[2]], target: [x, y, target[2]] };
+}
+
+// Without an aspect every state is the plain table entry; with one, BUBBLE is
+// framed for that viewport.
+export function getCameraState(name, aspect) {
   const state = CAMERA_STATES[name];
   if (!state) throw new Error(`Unknown camera state: ${name}`);
+  if (name === 'BUBBLE' && Number.isFinite(aspect) && aspect > 0) return framedBubbleState(aspect);
   return { position: [...state.position], target: [...state.target] };
 }
 

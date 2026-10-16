@@ -1,8 +1,11 @@
 // Inner bubble: the detail view of one offer, drawn as HTML over the canvas.
 // Render function (no SFC) so it can be unit tested with plain Vitest + jsdom.
 //
-// Layout: the offer (kind, title, summary, illustration, contact) sits in the
-// middle; its info items float around it on desktop and stack below it on phones.
+// Layout: one readable column (kind, title, summary, CTA, contact, then the info
+// cards in a grid of wide cards) next to a visual stage. With the WebGL scene on,
+// the stage is left empty for the opened 3D bubble, which the BUBBLE camera frames
+// on the right (desktop) or at the top (phones); in static mode the stage holds
+// the round HTML illustration instead, so there is only ever one bubble.
 // Focus moves to the heading on open and whenever the offer changes; Escape and
 // the back button emit `close`, prev / next emit `navigate` with the adjacent id.
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -13,8 +16,6 @@ const external = (href, text, extra = {}) =>
   h('a', { href, target: '_blank', rel: 'noopener noreferrer', ...extra }, text);
 
 function renderItem(item, index, total) {
-  // Alternate around the center column on desktop; rows fill top-down.
-  const side = index % 2 === 0 ? 'lg:col-start-1' : 'lg:col-start-3';
   const body =
     item.values.length === 1
       ? h('p', { class: 'mt-1 leading-snug' }, item.values[0])
@@ -28,7 +29,7 @@ function renderItem(item, index, total) {
     {
       key: item.key,
       'data-detail-item': item.key,
-      class: `detail-item ${side}`,
+      class: 'detail-item',
       style: { animationDelay: `${-((index * 1.7) % 7)}s`, zIndex: total - index },
     },
     [h('h3', { class: 'text-sm font-bold tracking-wide uppercase' }, item.label), body],
@@ -40,9 +41,11 @@ export default defineComponent({
   props: {
     offer: { type: Object, required: true },
     reducedMotion: { type: Boolean, default: false },
+    // The WebGL scene shows the opened bubble: no duplicate HTML illustration.
+    sceneActive: { type: Boolean, default: false },
   },
   emits: ['close', 'navigate'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const heading = ref(null);
     const region = ref(null);
 
@@ -88,16 +91,28 @@ export default defineComponent({
     return () => {
       const { offer } = props;
       const list = items.value;
-      const rows = Math.max(1, Math.ceil(list.length / 2));
+      const stage = props.sceneActive
+        ? h('div', { class: 'detail-stage', 'aria-hidden': 'true' })
+        : h('div', { class: 'detail-stage' }, [
+            h('div', { class: 'detail-orb' }, [
+              h('img', {
+                src: offer.image,
+                alt: offer.imageAlt,
+                width: 224,
+                height: 224,
+                class: 'h-full w-full rounded-full object-cover',
+              }),
+            ]),
+          ]);
       return h(
         'section',
         {
           ref: region,
           'aria-labelledby': 'bubble-title',
-          class: ['bubble-detail', { 'is-static': props.reducedMotion }],
+          class: ['bubble-detail', { 'is-static': props.reducedMotion, 'has-scene': props.sceneActive }],
           style: { '--tint': tint.value },
         },
-        h('div', { class: 'mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-6' }, [
+        h('div', { class: 'mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6' }, [
           h('div', { class: 'flex justify-start' }, [
             h(
               'button',
@@ -105,65 +120,44 @@ export default defineComponent({
               '← Volver a las burbujas',
             ),
           ]),
-          h(
-            'div',
-            {
-              class:
-                'mt-8 grid grid-cols-1 gap-6 lg:grid-flow-row-dense lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)_minmax(0,1fr)] lg:items-center lg:gap-8',
-            },
-            [
+          slots.hint ? h('div', { class: 'mt-4' }, slots.hint()) : null,
+          h('div', { class: 'detail-layout mt-6' }, [
+            h('div', { class: 'detail-copy' }, [
+              h('p', { class: 'bubble-label' }, KIND_LABELS[offer.kind] ?? ''),
               h(
-                'div',
+                'h2',
                 {
-                  class: 'flex flex-col items-center text-center lg:col-start-2 lg:row-start-1',
-                  style: { gridRowEnd: `span ${rows}` },
+                  id: 'bubble-title',
+                  ref: heading,
+                  tabindex: '-1',
+                  class: 'mt-4 text-4xl leading-none font-bold outline-none sm:text-5xl',
                 },
-                [
-                  h('p', { class: 'bubble-label' }, KIND_LABELS[offer.kind] ?? ''),
-                  h(
-                    'h2',
-                    {
-                      id: 'bubble-title',
-                      ref: heading,
-                      tabindex: '-1',
-                      class: 'mt-4 text-4xl leading-none font-bold outline-none sm:text-5xl',
-                    },
-                    offer.title,
-                  ),
-                  h('p', { class: 'mt-4 text-lg leading-snug' }, offer.summary),
-                  h('div', { class: 'detail-orb mt-6' }, [
-                    h('img', {
-                      src: offer.image,
-                      alt: offer.imageAlt,
-                      width: 224,
-                      height: 224,
-                      class: 'h-full w-full rounded-full object-cover',
-                    }),
-                  ]),
-                  external(links.cta.url, links.cta.label, {
-                    'data-cta': 'primary',
-                    class: 'btn-pill btn-primary mt-8 text-lg',
-                  }),
-                  h('ul', { class: 'mt-5 flex flex-col items-center gap-2 text-base' }, [
-                    h('li', [
-                      external(contact.value.url, `WhatsApp · ${contact.value.label}: ${contact.value.display}`, {
-                        class: 'detail-link',
-                      }),
-                    ]),
-                    ...(offer.extraLinks ?? []).map((link) =>
-                      h('li', { key: link.url }, [external(link.url, link.label, { class: 'detail-link' })]),
-                    ),
-                    h('li', [external(offer.source, 'Ver en el sitio oficial', { class: 'detail-link' })]),
-                  ]),
-                ],
+                offer.title,
               ),
+              h('p', { class: 'detail-summary mt-4 text-lg leading-snug' }, offer.summary),
+              external(links.cta.url, links.cta.label, {
+                'data-cta': 'primary',
+                class: 'btn-pill btn-primary mt-6 text-lg',
+              }),
+              h('ul', { class: 'mt-5 flex flex-col items-start gap-2 text-base' }, [
+                h('li', [
+                  external(contact.value.url, `WhatsApp · ${contact.value.label}: ${contact.value.display}`, {
+                    class: 'detail-link',
+                  }),
+                ]),
+                ...(offer.extraLinks ?? []).map((link) =>
+                  h('li', { key: link.url }, [external(link.url, link.label, { class: 'detail-link' })]),
+                ),
+                h('li', [external(offer.source, 'Ver en el sitio oficial', { class: 'detail-link' })]),
+              ]),
               h(
                 'ul',
-                { class: 'detail-items', 'aria-label': `Información de ${offer.title}` },
+                { class: 'detail-items mt-8', 'aria-label': `Información de ${offer.title}` },
                 list.map((item, index) => renderItem(item, index, list.length)),
               ),
-            ],
-          ),
+            ]),
+            stage,
+          ]),
           h('nav', { 'aria-label': 'Otras propuestas', class: 'mt-10 flex flex-wrap justify-between gap-3' }, [
             navButton('prev', '← Anterior', adjacent.value.prev),
             navButton('next', 'Siguiente →', adjacent.value.next),

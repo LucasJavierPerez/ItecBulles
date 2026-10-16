@@ -1,5 +1,8 @@
 // One-time tutorial card (overworld and bubble), as in Projet Bulles. The parent
 // decides when it shows and records the dismissal (ui.completeTutorial).
+// It sits in the document flow where the parent places it (under the overworld
+// header, under the detail's back button), so it never floats over a primary
+// action such as "Quiero + Info" or the bubble title pill.
 import { defineComponent, h } from 'vue';
 
 export default defineComponent({
@@ -14,7 +17,7 @@ export default defineComponent({
         'section',
         {
           'aria-label': 'Sugerencia',
-          class: 'tutorial-hint fixed inset-x-4 bottom-6 z-40 mx-auto flex max-w-md items-center gap-4',
+          class: 'tutorial-hint pointer-events-auto mx-auto flex w-full max-w-md items-center gap-4 text-left',
         },
         [
           h('p', { role: 'status', 'aria-live': 'polite', class: 'flex-1 text-left leading-snug' }, props.message),
