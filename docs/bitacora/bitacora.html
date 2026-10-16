@@ -163,7 +163,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
 </header>
 
 <nav class="toc" aria-label="Secciones">
-  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
+  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#e005">Entrada 005</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
   <a href="#hallazgos">Hallazgos iTec</a><a href="#referencia">Qué tomar de Bulles</a><a href="#concepto">Concepto</a>
   <a href="#plan">Plan</a><a href="#decisiones">Decisiones</a>
 </nav>
@@ -192,6 +192,17 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <li><span class="sev l">Repo</span><p>Bitácora en <code>main</code>, landing en la rama <code>feat/landing-itec</code><small>La configuración local de herramientas queda fuera del repo porque contiene rutas de la máquina.</small></p></li>
     <li><span class="sev l">Contenido</span><p>Modelo con el contenido real del iTec y 10 tests<small>11 propuestas, 2 sedes y contactos, cada dato con su página de origen. El sitio no publica duración, horarios por carrera, costos ni fechas: no se inventaron.</small></p></li>
     <li><span class="sev m">Rumbo</span><p>La interfaz se frena y se estudia Bulles a fondo<small>Diseño, tecnología y experiencia de Bulles pasan a ser la referencia central. Resultado en la sección siguiente y en <code>docs/referencia/bulles-teardown.md</code>.</small></p></li>
+  </ul>
+</section>
+
+<section id="e005">
+  <p class="eyebrow">Entrada 005</p>
+  <h2>Ilustraciones y arranque en Nuxt</h2>
+  <div class="prompt">genera ilustraciones sobre las fotos actuales</div>
+  <ul class="findings col">
+    <li><span class="sev l">Decisión</span><p>Cada burbuja muestra una ilustración hecha a partir de una foto oficial del iTec<small>No hay un modelo que genere imágenes: un script con sharp lleva cada foto a la paleta de Bulles y le suma contornos de tinta y textura de papel. Se guarda la fuente de cada foto.</small></p></li>
+    <li><span class="sev l">T2</span><p>El proyecto pasó a Nuxt 4, con Pinia y Tailwind 4<small>Tiene el store de estados inicio → intro → burbujas → detalle, con 16 tests escritos antes que el código.</small></p></li>
+    <li><span class="sev m">T8</span><p>11 ilustraciones, todavía con aspecto de foto filtrada<small>Marketing, turismo e ingreso se leen bien. iTec Labs, mecatrónica, portal de trabajo y capacitación quedan ruidosas, y tres propuestas comparten la foto del edificio.</small></p></li>
   </ul>
 </section>
 
@@ -350,10 +361,11 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="dec"><code>D-05</code><span>Lo que usan los alumnos actuales (horarios, calendario, SiTec) pasa al pie del sitio como enlaces secundarios.</span><span class="st prop">propuesta</span></div>
     <div class="dec"><code>D-06</code><span>Botón principal "Quiero + Info" (formulario actual); WhatsApp como contacto secundario.</span><span class="st prop">supuesto</span></div>
     <div class="dec"><code>D-07</code><span>Diseño, tecnología y experiencia de Bulles son la referencia central: Nuxt, three.js, GSAP y Howler.</span><span class="st firm">firme</span></div>
+    <div class="dec"><code>D-08</code><span>Dentro de cada burbuja va una ilustración hecha a partir de las fotos actuales del sitio.</span><span class="st firm">firme</span></div>
   </div>
   <div class="next">
     <h3>Próximo paso</h3>
-    <p>Definir qué se ve dentro de cada burbuja. En Bulles son dibujos de los alumnos; en iTec falta decidirlo.</p>
+    <p>Definir si el estilo de las ilustraciones se ajusta ahora o al final, y seguir con la escena 3D (T3).</p>
   </div>
 </section>
 
