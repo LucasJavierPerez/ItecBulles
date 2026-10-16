@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
 
     <!-- Always-visible settings (top-right). -->
     <div class="fixed top-4 right-4 z-50 flex gap-2 sm:top-6 sm:right-6">
-      <SoundToggle :muted="ui.muted" @toggle="ui.toggleMute()" />
+      <SoundToggle :muted="ui.muted" :volume="ui.volume" @toggle="ui.toggleMute()" @volume="ui.setVolume" />
       <MotionToggle :reduced="ui.reducedMotion" @toggle="ui.setUserReducedMotion(!ui.reducedMotion)" />
     </div>
 

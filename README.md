@@ -69,3 +69,12 @@ npm run sounds   # regenerate public/sounds/*.wav
 `app/audio/soundManager.js` imports howler and creates the Howls only after the first user gesture, rotates
 variants per action, mutes globally (persisted in localStorage) and fades the ambience out while the tab is
 hidden. `app/audio/connectSound.js` maps scene events and store changes to sounds.
+
+Volume: the "Sonido" pill (top-right) opens a small panel with a "Volumen" slider (0–100 %, steps of 5,
+arrow keys work) and a separate mute button. Tap or click toggles the panel, a mouse hover previews it,
+Escape or a click elsewhere closes it. On phones the panel sits on the same row, left of the pill; from
+640 px it sits right under the settings row, so it never covers the headings. The slider sets a master
+volume (default 70 %) through `Howler.volume()`, on top of each sound's own volume, so the ambience fades
+keep their per-sound targets. It is stored in the ui store (`volume`, `setVolume`), persisted under
+`itec-bulles:volume` and applied as soon as howler loads (also when changed before the first gesture).
+Volume 0 shows as muted, moving the slider up unmutes, and unmuting at 0 restores the default 70 %.

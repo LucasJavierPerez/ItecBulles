@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
 import { offers } from '../data/content.js';
 import { loadCompletedTutorials, saveCompletedTutorials } from './tutorialStorage.js';
-import { loadMuted, saveMuted } from '../audio/soundManager.js';
+import {
+  DEFAULT_VOLUME,
+  clampVolume,
+  loadMuted,
+  saveMuted,
+  loadVolume,
+  saveVolume,
+} from '../audio/soundManager.js';
 import { loadReducedMotionPreference, saveReducedMotionPreference } from './preferences.js';
 
 // UI state machine, mirroring the Projet Bulles `ui` store:
@@ -19,6 +26,8 @@ export const useUiStore = defineStore('ui', {
     activeBubbleId: null,
     completedTutorials: [],
     muted: false,
+    // Master volume 0..1 (the "Volumen" slider); 0 is shown as muted.
+    volume: DEFAULT_VOLUME,
     reducedMotion: false,
     // Visitor's own choice ("Reducir movimiento" toggle); null = follow the system.
     reducedMotionPreference: null,
@@ -89,12 +98,29 @@ export const useUiStore = defineStore('ui', {
 
     toggleMute() {
       this.muted = !this.muted;
+      // Unmuting a slider left at 0 would still be silent: bring the default back.
+      if (!this.muted && this.volume === 0) {
+        this.volume = DEFAULT_VOLUME;
+        saveVolume(this.volume);
+      }
       saveMuted(this.muted);
+    },
+
+    // Volume 0 reads as muted; any audible volume (also while muted) unmutes.
+    setVolume(value) {
+      this.volume = clampVolume(value);
+      saveVolume(this.volume);
+      const muted = this.volume === 0;
+      if (muted !== this.muted) {
+        this.muted = muted;
+        saveMuted(muted);
+      }
     },
 
     // Restores persisted visitor preferences (client only, on mount).
     hydratePreferences() {
-      this.muted = loadMuted();
+      this.volume = loadVolume();
+      this.muted = loadMuted() || this.volume === 0;
       const preference = loadReducedMotionPreference();
       if (preference !== null) {
         this.reducedMotionPreference = preference;

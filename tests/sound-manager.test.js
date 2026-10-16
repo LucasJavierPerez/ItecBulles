@@ -7,6 +7,11 @@ import {
   loadMuted,
   saveMuted,
   MUTED_STORAGE_KEY,
+  VOLUME_STORAGE_KEY,
+  DEFAULT_VOLUME,
+  clampVolume,
+  loadVolume,
+  saveVolume,
   createSoundManager,
 } from '../app/audio/soundManager.js';
 
@@ -61,7 +66,15 @@ function fakeHowler() {
     }
     unload() {}
   }
-  const Howler = { muted: null, mute: vi.fn((value) => (Howler.muted = value)) };
+  const Howler = {
+    muted: null,
+    level: 1,
+    mute: vi.fn((value) => (Howler.muted = value)),
+    volume: vi.fn((value) => {
+      if (value !== undefined) Howler.level = value;
+      return Howler.level;
+    }),
+  };
   return { module: { Howl, Howler }, howls, Howler };
 }
 
@@ -125,6 +138,39 @@ describe('mute persistence', () => {
   });
 });
 
+describe('volume persistence', () => {
+  it('defaults to 70 %', () => {
+    expect(DEFAULT_VOLUME).toBe(0.7);
+    expect(loadVolume(memoryStorage())).toBe(0.7);
+  });
+
+  it('clamps to 0..1 and falls back to the default for garbage', () => {
+    expect(clampVolume(1.4)).toBe(1);
+    expect(clampVolume(-0.2)).toBe(0);
+    expect(clampVolume(0.333333)).toBe(0.33);
+    expect(clampVolume('0.5')).toBe(0.5);
+    expect(clampVolume(Number.NaN)).toBe(DEFAULT_VOLUME);
+    expect(clampVolume(undefined)).toBe(DEFAULT_VOLUME);
+  });
+
+  it('round-trips the volume', () => {
+    const storage = memoryStorage();
+    saveVolume(0.35, storage);
+    expect(storage.data[VOLUME_STORAGE_KEY]).toBe('0.35');
+    expect(loadVolume(storage)).toBe(0.35);
+    saveVolume(0, storage);
+    expect(loadVolume(storage)).toBe(0);
+  });
+
+  it('ignores corrupt values and blocked storage', () => {
+    expect(loadVolume(memoryStorage({ [VOLUME_STORAGE_KEY]: 'loud' }))).toBe(DEFAULT_VOLUME);
+    expect(loadVolume(memoryStorage({ [VOLUME_STORAGE_KEY]: '7' }))).toBe(1);
+    expect(loadVolume(throwingStorage)).toBe(DEFAULT_VOLUME);
+    expect(() => saveVolume(0.5, throwingStorage)).not.toThrow();
+    expect(loadVolume(null)).toBe(DEFAULT_VOLUME);
+  });
+});
+
 describe('createSoundManager', () => {
   let howler;
   let manager;
@@ -172,6 +218,25 @@ describe('createSoundManager', () => {
     expect(howler.Howler.mute).toHaveBeenLastCalledWith(true);
     manager.setMuted(false);
     expect(howler.Howler.mute).toHaveBeenLastCalledWith(false);
+  });
+
+  it('applies the master volume on load, also when set before unlocking', async () => {
+    manager.setVolume(0.4);
+    expect(howler.Howler.volume).not.toHaveBeenCalled();
+    await manager.unlock();
+    expect(howler.Howler.volume).toHaveBeenLastCalledWith(0.4);
+    manager.setVolume(1.5);
+    expect(howler.Howler.volume).toHaveBeenLastCalledWith(1);
+  });
+
+  it('starts at the default master volume and keeps per-sound fade targets', async () => {
+    await manager.unlock();
+    expect(howler.Howler.volume).toHaveBeenLastCalledWith(DEFAULT_VOLUME);
+    manager.setVolume(0.2);
+    const ambience = howler.howls.find((h) => h.options.loop);
+    expect(ambience.fades.at(-1)[1]).toBe(SOUNDS.ambience.volume);
+    const hover = howler.howls.find((h) => h.options.src[0].includes('hover'));
+    expect(hover.options.volume).toBe(SOUNDS.hover.volume);
   });
 
   it('fades the ambience out while the tab is hidden and back in when visible', async () => {

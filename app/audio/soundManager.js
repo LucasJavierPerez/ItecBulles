@@ -4,10 +4,14 @@
 //   - nothing is downloaded before the first user gesture (`unlock`): howler itself
 //     is imported lazily and the Howls are created only then;
 //   - the mute is global (Howler.mute) and persisted in localStorage;
+//   - a master volume (Howler.volume, 0..1) scales every sound on top of its own
+//     volume; it is persisted too and applied as soon as howler loads;
 //   - the ambience fades out while the tab is hidden.
 // The files in /public/sounds are synthesized by `npm run sounds`.
 
 export const MUTED_STORAGE_KEY = 'itec-bulles:muted';
+export const VOLUME_STORAGE_KEY = 'itec-bulles:volume';
+export const DEFAULT_VOLUME = 0.7;
 
 const file = (name) => `/sounds/${name}.wav`;
 
@@ -65,6 +69,30 @@ export function saveMuted(muted, storage = browserStorage()) {
   }
 }
 
+/** Master volume in 0..1, rounded to hundredths; garbage falls back to the default. */
+export function clampVolume(value) {
+  if (value === null || value === undefined || value === '') return DEFAULT_VOLUME;
+  const number = Number(value);
+  if (!Number.isFinite(number)) return DEFAULT_VOLUME;
+  return Math.round(Math.min(1, Math.max(0, number)) * 100) / 100;
+}
+
+export function loadVolume(storage = browserStorage()) {
+  try {
+    return clampVolume(storage?.getItem(VOLUME_STORAGE_KEY));
+  } catch {
+    return DEFAULT_VOLUME;
+  }
+}
+
+export function saveVolume(volume, storage = browserStorage()) {
+  try {
+    storage?.setItem(VOLUME_STORAGE_KEY, String(clampVolume(volume)));
+  } catch {
+    // Not persisted: the volume goes back to the default next time.
+  }
+}
+
 export function createSoundManager({
   loadHowler = () => import('howler'),
   now = () => (typeof performance === 'undefined' ? Date.now() : performance.now()),
@@ -73,6 +101,7 @@ export function createSoundManager({
   let ambience = null;
   let unlocking = null;
   let muted = false;
+  let volume = DEFAULT_VOLUME;
   let hidden = false;
   const effects = new Map(); // action -> { howls, next, cooldown, lastAt }
 
@@ -88,6 +117,7 @@ export function createSoundManager({
       const { Howl, Howler } = mod.default?.Howl ? mod.default : mod;
       howlerApi = Howler;
       Howler.mute(muted);
+      Howler.volume(volume);
       ambience = new Howl({ src: SOUNDS.ambience.src, loop: true, volume: 0, preload: true });
       for (const [action, entry] of Object.entries(SOUNDS)) {
         if (!entry.variants) continue;
@@ -127,6 +157,12 @@ export function createSoundManager({
     setMuted(value) {
       muted = Boolean(value);
       howlerApi?.mute(muted);
+    },
+
+    /** Master volume (0..1); per-sound volumes and fade targets stay as they are. */
+    setVolume(value) {
+      volume = clampVolume(value);
+      howlerApi?.volume(volume);
     },
 
     setHidden(value) {

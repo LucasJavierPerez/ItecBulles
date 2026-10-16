@@ -46,6 +46,7 @@ export function connectSound({ ui, events, manager, doc = document }) {
   );
 
   offs.push(watch(() => ui.muted, (muted) => manager.setMuted(muted), { immediate: true }));
+  offs.push(watch(() => ui.volume, (volume) => manager.setVolume(volume), { immediate: true }));
 
   const onVisibility = () => manager.setHidden(doc.visibilityState === 'hidden');
   doc.addEventListener('visibilitychange', onVisibility);
