@@ -21,6 +21,7 @@ The current Google Sites page scatters information, has three enrollment paths, 
 - D-03 single primary CTA: "Quiero + Info" (existing Google Form). D-06 (assumption, pending user confirmation): WhatsApp as secondary contact.
 - D-05 current-student links (horarios, calendario, SiTec) in footer only.
 - Content only from the official site; no invented dates, durations or numbers.
+- D-08 (user, 2026-10-16): each bubble shows an illustration derived from the current official-site photos. No image-generation model is available, so illustrations are produced by a reproducible build script (sharp) that stylizes the downloaded photos (posterize to the Bulles palette + ink outlines + paper grain). Originals and sources are recorded per offer.
 - UI copy in Spanish (target audience); code, identifiers and comments in English.
 
 ## Stack (re-planned 2026-10-16 after Bulles teardown)
@@ -33,6 +34,7 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - [ ] T4 Bubble overworld: pool of bubbles (one per offer), drag/wheel inertia (friction ~.92), edge arc, noise-wobble sphere + fresnel rim shell + circular inner image, hover ripple, click ripple transition. Route: delegated.
 - [ ] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
 - [ ] T6 Sound + accessibility: Howler ambience/hover/click with mute and first-gesture unlock; DOM list fallback with keyboard, reduced-motion static mode, no-WebGL fallback, practical info always reachable. Route: delegated.
+- [ ] T8 Bubble illustrations (runs before T4): download official photos per offer, `scripts/illustrate.mjs` with sharp produces `public/bubbles/<offer-id>.webp` (square, circular-safe), `image` + `imageSource` fields in content.js, tests that every offer has an existing illustration. Route: delegated.
 - [ ] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 
 ## Acceptance criteria
@@ -54,4 +56,4 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - Scope change (user, 2026-10-16): T2–T4 paused; stack and UI to be re-planned after a deeper study of experience.projetbulles.com (likely Nuxt/Vue + WebGL). Minimal Vite scaffold from T1 may be replaced.
 
 ## Next step
-User decision pending: what goes inside each bubble (Bulles shows student drawings). Then delegate T2.
+D-08 resolved (illustrations from official photos). Delegate T2, then T8, then T3–T6, then T7.
