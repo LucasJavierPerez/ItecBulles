@@ -23,15 +23,17 @@ The current Google Sites page scatters information, has three enrollment paths, 
 - Content only from the official site; no invented dates, durations or numbers.
 - UI copy in Spanish (target audience); code, identifiers and comments in English.
 
-## Stack
-Vite + vanilla JS (ES modules) + Vitest/jsdom. No framework.
+## Stack (re-planned 2026-10-16 after Bulles teardown)
+Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js + Tailwind v4, Vitest for logic. Content stays local in `src/content.js` (no DatoCMS). No submission form (CTA goes to the existing Google Form). Previous plan: Vite + vanilla JS (superseded; T1 data reused).
 
 ## Tasks
 - [x] T1 Scaffold + content model: Vite/Vitest setup, `src/content.js` with real data scraped from the official site, content integrity tests. Route: delegated (writer; preparation reading of 10+ pages).
-- [ ] T2 Page structure + practical info: semantic layout, hero with Ingreso 2027 CTA, campuses/hours/contact, footer. Tests for rendered landmarks and CTA. Route: delegated (same writer).
-- [ ] T3 Bubble field + detail dialog: accessible bubble buttons, floating motion (disabled under reduced motion), `<dialog>` with offer detail and CTA, list fallback. Tests for render, open/close, focus return, Escape. Route: delegated.
-- [ ] T4 Living gradient background: WebGL shader canvas with CSS gradient fallback, pauses when hidden/reduced motion. Route: delegated.
-- [ ] T5 Verification + log: build, tests, browser check desktop/mobile, bitácora entry 003. Route: inline (parent).
+- [ ] T2 Nuxt scaffold + UI state machine: migrate to Nuxt, Pinia store `ui` (home → intro → overworld → bubble), reuse content.js + tests, Tailwind tokens from the Bulles palette. Route: delegated.
+- [ ] T3 three.js scene: fullscreen canvas, sky gradient, camera states with GSAP, skippable intro along a curve, mouse parallax, loader with timeout. Route: delegated.
+- [ ] T4 Bubble overworld: pool of bubbles (one per offer), drag/wheel inertia (friction ~.92), edge arc, noise-wobble sphere + fresnel rim shell + circular inner image, hover ripple, click ripple transition. Route: delegated.
+- [ ] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
+- [ ] T6 Sound + accessibility: Howler ambience/hover/click with mute and first-gesture unlock; DOM list fallback with keyboard, reduced-motion static mode, no-WebGL fallback, practical info always reachable. Route: delegated.
+- [ ] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 
 ## Acceptance criteria
 - `npm test` and `npm run build` pass.
@@ -52,4 +54,4 @@ Vite + vanilla JS (ES modules) + Vitest/jsdom. No framework.
 - Scope change (user, 2026-10-16): T2–T4 paused; stack and UI to be re-planned after a deeper study of experience.projetbulles.com (likely Nuxt/Vue + WebGL). Minimal Vite scaffold from T1 may be replaced.
 
 ## Next step
-Study experience.projetbulles.com in depth, then re-plan T2–T4 (stack and UI).
+User decision pending: what goes inside each bubble (Bulles shows student drawings). Then delegate T2.
