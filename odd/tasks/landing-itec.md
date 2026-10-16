@@ -25,11 +25,11 @@ The current Google Sites page scatters information, has three enrollment paths, 
 - UI copy in Spanish (target audience); code, identifiers and comments in English.
 
 ## Stack (re-planned 2026-10-16 after Bulles teardown)
-Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js + Tailwind v4, Vitest for logic. Content stays local in `src/content.js` (no DatoCMS). No submission form (CTA goes to the existing Google Form). Previous plan: Vite + vanilla JS (superseded; T1 data reused).
+Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js + Tailwind v4, Vitest for logic. Content stays local in `app/data/content.js` (moved from `src/content.js` in T2) (no DatoCMS). No submission form (CTA goes to the existing Google Form). Previous plan: Vite + vanilla JS (superseded; T1 data reused).
 
 ## Tasks
 - [x] T1 Scaffold + content model: Vite/Vitest setup, `src/content.js` with real data scraped from the official site, content integrity tests. Route: delegated (writer; preparation reading of 10+ pages).
-- [ ] T2 Nuxt scaffold + UI state machine: migrate to Nuxt, Pinia store `ui` (home → intro → overworld → bubble), reuse content.js + tests, Tailwind tokens from the Bulles palette. Route: delegated.
+- [x] T2 Nuxt scaffold + UI state machine: migrate to Nuxt, Pinia store `ui` (home → intro → overworld → bubble), reuse content.js + tests, Tailwind tokens from the Bulles palette. Route: delegated.
 - [ ] T3 three.js scene: fullscreen canvas, sky gradient, camera states with GSAP, skippable intro along a curve, mouse parallax, loader with timeout. Route: delegated.
 - [ ] T4 Bubble overworld: pool of bubbles (one per offer), drag/wheel inertia (friction ~.92), edge arc, noise-wobble sphere + fresnel rim shell + circular inner image, hover ripple, click ripple transition. Route: delegated.
 - [ ] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
@@ -53,7 +53,13 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
   - `npm test`: 1 file, 10 tests passed. `npm run build`: built OK.
   - Content: 11 offers (ingreso, 5 carreras, trayecto, secundario, capacitación, iTec Labs, portal de trabajo), 2 campuses, contacts, links; each offer cites its official source page. Fields missing on the site were omitted.
   - Missing on official site: duration and formal title for all 5 careers (only Mecatrónica states "Técnico en Mecatrónica"), class schedule per career, costs, enrollment and cursillo dates, Ada Byron title/schedule.
+- T2 done · commit `206a766` (`feat: migrate to Nuxt with ui state machine`). Route: delegated writer (2+ non-trivial files).
+  - Nuxt 4.5.2 SPA (`ssr: false`), `nuxt generate` → `.output/public` (+ `dist` symlink, now ignored). Pinia 4.1 + @pinia/nuxt 1.0.3, Tailwind 4.3 via @tailwindcss/vite, three 0.186, gsap 3.15, howler 2.2.4 installed for later tasks. Standalone `vite` dev dependency removed.
+  - Content moved to `app/data/content.js`; only the test import path changed.
+  - RED observed: `npx vitest run` → ui-store suite failed to resolve `app/stores/ui.js` (content suite 10 passed).
+  - GREEN: `npm test` → 2 files, 26 tests passed (10 content + 16 ui store). `npm run build` → generated `.output/public`, `<html lang="es">`, title "iTec Río Cuarto · Ingreso 2027".
+  - Font substitute: Bricolage Grotesque (Google Fonts) with system fallback stack. Risk tier: medium (writer self-verification).
 - Scope change (user, 2026-10-16): T2–T4 paused; stack and UI to be re-planned after a deeper study of experience.projetbulles.com (likely Nuxt/Vue + WebGL). Minimal Vite scaffold from T1 may be replaced.
 
 ## Next step
-D-08 resolved (illustrations from official photos). Delegate T2, then T8, then T3–T6, then T7.
+D-08 resolved (illustrations from official photos). T2 done. Delegate T8, then T3–T6, then T7.
