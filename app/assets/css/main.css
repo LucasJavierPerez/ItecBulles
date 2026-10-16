@@ -244,3 +244,10 @@
     }
   }
 }
+
+/* Compact pill for the always-visible settings (sound, motion). */
+.settings-pill {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 12px rgb(40 11 60 / 0.12);
+}

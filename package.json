@@ -10,7 +10,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
-    "illustrate": "node scripts/illustrate.mjs"
+    "illustrate": "node scripts/illustrate.mjs",
+    "sounds": "node scripts/sounds.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

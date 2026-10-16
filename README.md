@@ -50,3 +50,17 @@ node scripts/contact-sheet.mjs /tmp/contact-sheet.png  # review all illustration
 To change a photo, replace the file in `assets/photos/`, update its `sources.json` entry (url, page, crop),
 run `npm run illustrate`, and update the offer's `imageAlt` in `app/data/content.js` to describe it.
 The signed `googleusercontent.com` URLs may expire; the committed originals are the reproducible input.
+
+## Sound
+
+The sounds in `public/sounds/` are original and synthesized by `scripts/sounds.mjs` (no downloads, no
+dependencies; deterministic, 16-bit mono WAV at 22050 Hz, ~590 KB in total): a seamless 10 s pad loop,
+three hover "blops", two click pops with shimmer, a whoosh for the transition and a soft close.
+
+```sh
+npm run sounds   # regenerate public/sounds/*.wav
+```
+
+`app/audio/soundManager.js` imports howler and creates the Howls only after the first user gesture, rotates
+variants per action, mutes globally (persisted in localStorage) and fades the ambience out while the tab is
+hidden. `app/audio/connectSound.js` maps scene events and store changes to sounds.

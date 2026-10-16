@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { offers } from '../data/content.js';
 import { loadCompletedTutorials, saveCompletedTutorials } from './tutorialStorage.js';
+import { loadMuted, saveMuted } from '../audio/soundManager.js';
 
 // UI state machine, mirroring the Projet Bulles `ui` store:
 //   home -> intro -> overworld <-> bubble
@@ -85,6 +86,12 @@ export const useUiStore = defineStore('ui', {
 
     toggleMute() {
       this.muted = !this.muted;
+      saveMuted(this.muted);
+    },
+
+    // Restores persisted visitor preferences (client only, on mount).
+    hydratePreferences() {
+      this.muted = loadMuted();
     },
 
     setReducedMotion(value) {

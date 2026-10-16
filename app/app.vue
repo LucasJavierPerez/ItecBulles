@@ -5,10 +5,16 @@ import { institution, offers } from '~/data/content.js';
 import StaticBubbleGrid from '~/components/StaticBubbleGrid.js';
 import BubbleDetail from '~/components/BubbleDetail.js';
 import TutorialHint from '~/components/TutorialHint.js';
+import SoundToggle from '~/components/SoundToggle.js';
+import { sceneEvents } from '~/scene/events.js';
+import { createSoundManager } from '~/audio/soundManager.js';
+import { connectSound } from '~/audio/connectSound.js';
 
 const ui = useUiStore();
 
 let motionQuery;
+let disconnectSound = null;
+let sound = null;
 const syncMotion = () => ui.setReducedMotion(motionQuery.matches);
 
 // One-time tutorials (Projet Bulles style), remembered in localStorage.
@@ -40,18 +46,31 @@ watch(
 
 onMounted(() => {
   ui.hydrateTutorials();
+  ui.hydratePreferences();
+  // Howls are created lazily on the first gesture (see soundManager.js).
+  sound = createSoundManager();
+  disconnectSound = connectSound({ ui, events: sceneEvents, manager: sound });
   motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   syncMotion();
   motionQuery.addEventListener('change', syncMotion);
 });
 
-onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
+onBeforeUnmount(() => {
+  motionQuery?.removeEventListener('change', syncMotion);
+  disconnectSound?.();
+  sound?.dispose();
+});
 </script>
 
 <template>
   <div class="bg-sky relative min-h-dvh overflow-hidden">
     <!-- Fullscreen three.js canvas behind the UI (static CSS sky when unavailable). -->
     <SceneCanvas />
+
+    <!-- Always-visible settings (top-right). -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2 sm:top-6 sm:right-6">
+      <SoundToggle :muted="ui.muted" @toggle="ui.toggleMute()" />
+    </div>
 
     <!-- The UI layer lets pointer events through to the canvas; sections opt back in. -->
     <main
@@ -66,6 +85,7 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
         <button type="button" class="btn-pill mt-10 text-lg" @click="ui.startExperience()">
           Descubrir las propuestas
         </button>
+        <p class="mt-4 text-sm opacity-80">Mejor con auriculares</p>
       </section>
 
       <section
