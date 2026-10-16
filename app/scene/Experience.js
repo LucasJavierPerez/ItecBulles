@@ -41,6 +41,8 @@ const SKY_FRAGMENT = /* glsl */ `
   uniform vec3 uBlue;
   uniform vec3 uPurple;
   uniform vec3 uYellow;
+  uniform vec3 uTint;
+  uniform float uTintAmount;
   varying vec2 vUv;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -67,6 +69,13 @@ const SKY_FRAGMENT = /* glsl */ `
     vec3 color = t < 0.25
       ? mix(uBlue, uPurple, t / 0.25)
       : mix(uPurple, uYellow, (t - 0.25) / 0.75);
+
+    // Inner-bubble ambiance: lean towards the offer's bubble color with a soft
+    // cream glow in the middle, still breathing with the same noise.
+    float glow = 1.0 - smoothstep(0.0, 0.75, length((vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0)));
+    vec3 tinted = mix(color, uTint, 0.32 + (n - 0.75) * 0.1);
+    tinted = mix(tinted, vec3(1.0, 0.98, 0.93), glow * 0.35);
+    color = mix(color, tinted, uTintAmount);
     gl_FragColor = vec4(color, 1.0);
   }
 `;
@@ -248,6 +257,14 @@ export class Experience {
 
   // ----------------------------------------------------------------- scene
 
+  // Tints the sky for the inner bubble; `null` fades back to the plain sky.
+  setAmbiance(hex) {
+    const uniforms = this.skyMaterial.uniforms;
+    if (hex) uniforms.uTint.value.copy(srgb(parseInt(String(hex).replace('#', ''), 16)));
+    gsap.killTweensOf(uniforms.uTintAmount);
+    gsap.to(uniforms.uTintAmount, { value: hex ? 1 : 0, duration: 1.2, ease: 'power2.out' });
+  }
+
   buildSky() {
     this.skyMaterial = new THREE.ShaderMaterial({
       vertexShader: SKY_VERTEX,
@@ -260,6 +277,8 @@ export class Experience {
         uBlue: { value: srgb(0x8da0fb) },
         uPurple: { value: srgb(0xb88ff4) },
         uYellow: { value: srgb(0xfbc77a) },
+        uTint: { value: srgb(0xffd333) },
+        uTintAmount: { value: 0 },
       },
     });
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.skyMaterial);

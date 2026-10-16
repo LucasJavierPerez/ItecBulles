@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { offers } from '../data/content.js';
+import { loadCompletedTutorials, saveCompletedTutorials } from './tutorialStorage.js';
 
 // UI state machine, mirroring the Projet Bulles `ui` store:
 //   home -> intro -> overworld <-> bubble
@@ -25,6 +26,7 @@ export const useUiStore = defineStore('ui', {
 
   getters: {
     activeOffer: (state) => offers.find((offer) => offer.id === state.activeBubbleId) ?? null,
+    isTutorialPending: (state) => (name) => !state.completedTutorials.includes(name),
   },
 
   actions: {
@@ -55,6 +57,12 @@ export const useUiStore = defineStore('ui', {
       this.currentStep = 'bubble';
     },
 
+    // Prev / next inside the detail view: stays in the bubble step.
+    switchBubble(id) {
+      if (this.currentStep !== 'bubble' || !OFFER_IDS.has(id)) return;
+      this.activeBubbleId = id;
+    },
+
     closeBubble() {
       if (this.currentStep !== 'bubble') return;
       this.activeBubbleId = null;
@@ -63,7 +71,16 @@ export const useUiStore = defineStore('ui', {
 
     completeTutorial(name) {
       if (typeof name !== 'string' || name.trim() === '') return;
-      if (!this.completedTutorials.includes(name)) this.completedTutorials.push(name);
+      if (this.completedTutorials.includes(name)) return;
+      this.completedTutorials.push(name);
+      saveCompletedTutorials(this.completedTutorials);
+    },
+
+    // Restores dismissed tutorials from localStorage (client only, on mount).
+    hydrateTutorials() {
+      for (const name of loadCompletedTutorials()) {
+        if (!this.completedTutorials.includes(name)) this.completedTutorials.push(name);
+      }
     },
 
     toggleMute() {

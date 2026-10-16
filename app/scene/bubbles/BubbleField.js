@@ -144,6 +144,14 @@ export class BubbleField {
     if (mode !== 'bubble') this.openedIndex = -1;
   }
 
+  // Detail view opened from the DOM (list, prev / next): keep that bubble centered.
+  showOpened(id) {
+    const index = this.offers.findIndex((offer) => offer.id === id);
+    if (index < 0) return;
+    this.openedIndex = index;
+    this.carousel.focusIndex(index);
+  }
+
   focusById(id) {
     const index = this.offers.findIndex((offer) => offer.id === id);
     if (index >= 0) this.carousel.focusIndex(index);

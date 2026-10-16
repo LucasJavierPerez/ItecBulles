@@ -1,15 +1,45 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue';
+import { computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useUiStore } from '~/stores/ui.js';
 import { institution, offers } from '~/data/content.js';
 import StaticBubbleGrid from '~/components/StaticBubbleGrid.js';
+import BubbleDetail from '~/components/BubbleDetail.js';
+import TutorialHint from '~/components/TutorialHint.js';
 
 const ui = useUiStore();
 
 let motionQuery;
 const syncMotion = () => ui.setReducedMotion(motionQuery.matches);
 
+// One-time tutorials (Projet Bulles style), remembered in localStorage.
+const tutorial = computed(() => {
+  if (ui.currentStep === 'overworld' && ui.isTutorialPending('overworld')) {
+    return {
+      name: 'overworld',
+      message: ui.sceneActive
+        ? 'Arrastrá para explorar, tocá una burbuja para entrar.'
+        : 'Tocá una burbuja para entrar y conocer cada propuesta.',
+    };
+  }
+  if (ui.currentStep === 'bubble' && ui.isTutorialPending('bubble')) {
+    return { name: 'bubble', message: 'Explorá la información y volvé cuando quieras.' };
+  }
+  return null;
+});
+
+// Closing the detail returns focus to the bubble (list button or static bubble)
+// of the offer last shown; focusing a list button also glides the carousel to it.
+watch(
+  () => ui.activeBubbleId,
+  async (id, previous) => {
+    if (id || !previous) return;
+    await nextTick();
+    document.querySelector(`[data-offer-id="${previous}"]`)?.focus();
+  },
+);
+
 onMounted(() => {
+  ui.hydrateTutorials();
   motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   syncMotion();
   motionQuery.addEventListener('change', syncMotion);
@@ -59,7 +89,12 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
         <p class="mt-2 text-base">Arrastrá o usá la rueda para explorar. Tocá una burbuja para entrar.</p>
         <ul class="sr-only">
           <li v-for="offer in offers" :key="offer.id">
-            <button type="button" @click="ui.openBubble(offer.id)" @focus="ui.focusBubble(offer.id)">
+            <button
+              type="button"
+              :data-offer-id="offer.id"
+              @click="ui.openBubble(offer.id)"
+              @focus="ui.focusBubble(offer.id)"
+            >
               {{ offer.title }}
             </button>
           </li>
@@ -72,18 +107,21 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
         <StaticBubbleGrid :offers="offers" @open="ui.openBubble" />
       </section>
 
-      <section
+      <!-- Inner bubble: offer detail over the (tinted) canvas. -->
+      <BubbleDetail
         v-else-if="ui.currentStep === 'bubble' && ui.activeOffer"
-        aria-labelledby="bubble-title"
-        class="max-w-2xl"
-      >
-        <!-- T5 builds the inner bubble view here. -->
-        <h2 id="bubble-title" class="text-5xl leading-none font-bold">{{ ui.activeOffer.title }}</h2>
-        <p class="mt-6 text-lg leading-snug">{{ ui.activeOffer.summary }}</p>
-        <button type="button" class="btn-pill mt-10" @click="ui.closeBubble()">
-          Volver a las burbujas
-        </button>
-      </section>
+        :offer="ui.activeOffer"
+        :reduced-motion="ui.reducedMotion"
+        @close="ui.closeBubble()"
+        @navigate="ui.switchBubble"
+      />
+
+      <TutorialHint
+        v-if="tutorial"
+        :key="tutorial.name"
+        :message="tutorial.message"
+        @dismiss="ui.completeTutorial(tutorial.name)"
+      />
     </main>
   </div>
 </template>

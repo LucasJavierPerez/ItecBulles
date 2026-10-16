@@ -10,6 +10,7 @@ import { createLoader } from '~/scene/loader.js';
 import { isWebGLAvailable } from '~/scene/renderSettings.js';
 import { sceneEvents, SCENE_EVENTS } from '~/scene/events.js';
 import { offers } from '~/data/content.js';
+import { tintFor } from '~/data/detail.js';
 import SceneLoader from '~/components/SceneLoader.vue';
 
 const ui = useUiStore();
@@ -140,6 +141,16 @@ watch(
 watch(
   () => ui.focusedBubbleId,
   (id) => bubbles?.focusById(id),
+);
+
+// Inner bubble: keep the opened bubble centered (also for list / prev-next opens)
+// and tint the sky with its color; back in the overworld the sky returns.
+watch(
+  () => ui.activeBubbleId,
+  (id) => {
+    if (id) bubbles?.showOpened(id);
+    experience?.setAmbiance(id ? tintFor(id) : null);
+  },
 );
 
 watch(() => ui.reducedMotion, syncMode);

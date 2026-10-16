@@ -112,6 +112,117 @@
   border-radius: 1.5rem;
 }
 
+/* Primary CTA ("Quiero + Info", D-03): the only filled dark pill. */
+.btn-primary {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.btn-primary:hover {
+  background-color: #3d1659;
+}
+
+/* Inner bubble: scrollable overlay tinted by the offer's bubble color. The canvas
+   sky also shifts to that tint; in static mode this gradient is the ambiance. */
+.bubble-detail {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow-y: auto;
+  text-align: left;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    color-mix(in srgb, var(--tint, #ffd333) 28%, transparent) 0%,
+    color-mix(in srgb, var(--color-cream) 18%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+.detail-orb {
+  width: 12rem;
+  height: 12rem;
+  border-radius: 9999px;
+  padding: 0.4rem;
+  background: conic-gradient(
+    from 210deg,
+    var(--tint, #ffd333),
+    var(--color-bubble-pink),
+    var(--color-bubble-violet),
+    var(--tint, #ffd333)
+  );
+  box-shadow:
+    inset 0 0 0 2px rgb(255 250 237 / 0.7),
+    0 14px 40px rgb(40 11 60 / 0.18);
+}
+
+@media (min-width: 1024px) {
+  .detail-orb {
+    width: 14rem;
+    height: 14rem;
+  }
+
+  /* Items become grid children so they can sit on both sides of the center. */
+  .detail-items {
+    display: contents;
+  }
+}
+
+.detail-items {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-item {
+  position: relative;
+  max-width: 26rem;
+  justify-self: center;
+  border-radius: 1.5rem;
+  padding: 1rem 1.25rem;
+  background-color: rgb(255 250 237 / 0.88);
+  box-shadow: 0 8px 28px rgb(40 11 60 / 0.12);
+  border: 2px solid color-mix(in srgb, var(--tint, #ffd333) 45%, transparent);
+  animation: detail-drift 7s var(--ease-standard) infinite alternate;
+}
+
+.detail-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+.detail-link:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+@keyframes detail-drift {
+  from {
+    transform: translate3d(0, -4px, 0) rotate(-0.4deg);
+  }
+  to {
+    transform: translate3d(0, 6px, 0) rotate(0.4deg);
+  }
+}
+
+.bubble-detail.is-static .detail-item {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-item {
+    animation: none;
+  }
+}
+
+.tutorial-hint {
+  border-radius: 1.5rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+  background-color: rgb(255 250 237 / 0.95);
+  color: var(--color-ink);
+  box-shadow: 0 10px 30px rgb(40 11 60 / 0.2);
+}
+
 @layer base {
   html,
   body {

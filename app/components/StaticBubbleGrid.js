@@ -20,6 +20,7 @@ export default defineComponent({
               'button',
               {
                 type: 'button',
+                'data-offer-id': offer.id,
                 class: 'static-bubble group flex flex-col items-center gap-3',
                 onClick: () => emit('open', offer.id),
               },
