@@ -19,9 +19,13 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
 
 <template>
   <div class="bg-sky relative min-h-dvh overflow-hidden">
-    <!-- T3 mounts the three.js canvas here, behind the HTML UI. -->
+    <!-- Fullscreen three.js canvas behind the UI (static CSS sky when unavailable). -->
+    <SceneCanvas />
 
-    <main class="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center">
+    <!-- The UI layer lets pointer events through to the canvas; sections opt back in. -->
+    <main
+      class="pointer-events-none relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center [&>section]:pointer-events-auto"
+    >
       <section v-if="ui.currentStep === 'home'" aria-labelledby="home-title" class="max-w-2xl">
         <p class="mb-4 text-lg font-medium">{{ institution.name }} · {{ institution.motto }}</p>
         <h1 id="home-title" class="text-6xl leading-[0.9] font-bold sm:text-8xl">Elegí tu burbuja</h1>
@@ -33,8 +37,12 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
         </button>
       </section>
 
-      <section v-else-if="ui.currentStep === 'intro'" aria-label="Introducción">
-        <!-- T3 plays the camera intro here. -->
+      <section
+        v-else-if="ui.currentStep === 'intro'"
+        aria-label="Introducción"
+        class="fixed right-6 bottom-6 sm:right-10 sm:bottom-10"
+      >
+        <!-- The camera intro plays in the canvas; skipping jumps to the bubbles. -->
         <button type="button" class="btn-pill" @click="ui.skipIntro()">Saltar intro</button>
       </section>
 
