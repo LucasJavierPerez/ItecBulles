@@ -1,5 +1,5 @@
 // Thin three.js layer for the bubble overworld: one bubble per offer laid out by the
-// pure carousel (app/scene/carousel.js). Each bubble = circular illustration plane +
+// pure carousel (app/scene/carousel.js). Each bubble = circular photo plane +
 // translucent noise-wobble shell with an iridescent fresnel rim.
 //
 // Modes (set from the ui step):

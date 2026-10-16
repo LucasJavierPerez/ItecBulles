@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
       </section>
 
       <section v-else-if="ui.currentStep === 'overworld'" aria-labelledby="overworld-title" class="py-16">
-        <!-- Static mode (no WebGL or reduced motion): CSS bubbles with the illustrations. -->
+        <!-- Static mode (no WebGL or reduced motion): CSS bubbles with the offer photos. -->
         <h2 id="overworld-title" class="mb-8 text-4xl font-bold">Propuestas</h2>
         <TutorialHint
           v-if="tutorial?.name === 'overworld'"

@@ -1,14 +1,23 @@
-// Turns the official iTec photos in assets/photos/ into flat, bubble-ready illustrations.
+// Builds the bubble images (public/bubbles/<offer-id>.webp, 1024x1024) from the official
+// iTec photos in assets/photos/.
 //
-//   npm run illustrate
+//   npm run bubble-images                      # default: --mode photo
+//   node scripts/bubble-images.mjs --mode illustration
 //
-// For every entry in assets/photos/sources.json:
-//   1. crop the square declared in `crop` (chosen to avoid text baked into banners),
-//   2. simplify shapes (median filter) and stretch contrast,
-//   3. map luminance bands onto the Projet Bulles palette (gradient map, per-image quantiles),
-//   4. draw ink outlines from a Sobel edge pass,
-//   5. add a deterministic paper grain,
-// and writes public/bubbles/<offer-id>.webp (1024x1024).
+// Both modes start from the square declared in `crop` in assets/photos/sources.json
+// (chosen to avoid text baked into banners).
+//
+// photo (default, used by the site): the real photo with gentle enhancement only —
+//   restore contrast (several headers carry a white wash), mild saturation, slight sharpen.
+//   Low-resolution crops (< LOW_RES px) are upscaled with a soft treatment instead of
+//   sharpening, so they read as slightly dreamy rather than broken.
+//
+// illustration (kept, not used): flat, stylized drawing —
+//   1. simplify shapes (median filter) and stretch contrast,
+//   2. map luminance bands onto the Projet Bulles palette (gradient map, per-image quantiles),
+//   3. draw ink outlines from a Sobel edge pass,
+//   4. add a deterministic paper grain.
+//
 // The output is fully deterministic: same inputs produce byte-identical files.
 
 import { readFile, mkdir } from 'node:fs/promises';
@@ -29,6 +38,18 @@ const BAND_QUANTILES = [0.1, 0.32, 0.54, 0.72, 0.88];
 const EDGE_THRESHOLD = 120; // Sobel magnitude (0-1442) above which a pixel becomes an outline.
 const GRAIN = 7; // +/- amplitude of the paper grain, in 8-bit levels.
 const SEED = 20261016;
+// Crops smaller than this (in source pixels) get the soft upscale instead of sharpening.
+const LOW_RES = 400;
+const MODES = ['photo', 'illustration'];
+
+function parseMode(argv) {
+  const index = argv.indexOf('--mode');
+  const mode = index === -1 ? 'photo' : argv[index + 1];
+  if (!MODES.includes(mode)) {
+    throw new Error(`Unknown --mode "${mode}". Use one of: ${MODES.join(', ')}`);
+  }
+  return mode;
+}
 
 function hexToRgb(hex) {
   const n = Number.parseInt(hex.slice(1), 16);
@@ -135,9 +156,28 @@ async function illustrate(id, entry) {
   return { id, file: path.relative(ROOT, file), kb: Math.round(info.size / 1024) };
 }
 
+async function photo(id, entry) {
+  const { left, top, size } = entry.crop;
+  const lowRes = size < LOW_RES;
+  let pipeline = sharp(path.join(PHOTOS, entry.file))
+    .extract({ left, top, width: size, height: size })
+    .resize(SIZE, SIZE, { kernel: lowRes ? 'mitchell' : 'lanczos3' })
+    .normalise({ lower: 1, upper: 99 })
+    .modulate({ saturation: 1.1 })
+    .linear(1.04, -4);
+  pipeline = lowRes ? pipeline.blur(1.4) : pipeline.sharpen({ sigma: 0.7 });
+
+  const file = path.join(OUT, `${id}.webp`);
+  const info = await pipeline.webp({ quality: 82, effort: 6 }).toFile(file);
+  const label = lowRes ? ' (low-res source, soft upscale)' : '';
+  return { id, file: path.relative(ROOT, file), kb: Math.round(info.size / 1024), label };
+}
+
+const mode = parseMode(process.argv.slice(2));
+const build = mode === 'photo' ? photo : illustrate;
 const sources = JSON.parse(await readFile(path.join(PHOTOS, 'sources.json'), 'utf8'));
 await mkdir(OUT, { recursive: true });
 for (const [id, entry] of Object.entries(sources)) {
-  const result = await illustrate(id, entry);
-  console.log(`${result.file}  ${result.kb} KB`);
+  const result = await build(id, entry);
+  console.log(`${result.file}  ${result.kb} KB${result.label ?? ''}`);
 }

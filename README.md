@@ -30,25 +30,30 @@ server rendering adds nothing. `nuxt generate` still produces a static site that
 - `app/assets/css/main.css` — Tailwind v4 tokens (`@theme`): Bulles palette, sky gradient, easings, `btn-pill`.
 - `tests/` — Vitest specs.
 
-## Bubble illustrations
+## Bubble images
 
-Each bubble shows a flat illustration derived from a photo on the official site. There is no image model:
-a deterministic `sharp` script stylizes the photos.
+Each bubble shows a real photo from the official site, cropped to a square and gently enhanced by a
+deterministic `sharp` script (no image model, byte-identical output on re-run).
 
 - `assets/photos/<offer-id>.<ext>` — the official photos (large PNGs re-encoded as JPEG q92).
 - `assets/photos/sources.json` — per offer: photo `url`, the `page` it appears on, the square `crop` used
-  (chosen to avoid text baked into banners), and a `note`. `generic: true` marks offers whose page has no
-  photo of its own and reuse another official photo.
-- `scripts/illustrate.mjs` — crop → median simplification → luminance bands mapped to the Bulles palette →
-  Sobel ink outlines → seeded paper grain → `public/bubbles/<offer-id>.webp` (1024×1024).
+  (chosen to avoid the titles printed over the header photos), and a `note`. `generic: true` marks offers
+  whose page has no photo of its own and reuse another official photo.
+- `scripts/bubble-images.mjs` — writes `public/bubbles/<offer-id>.webp` (1024×1024):
+  - `--mode photo` (default, used by the site): crop → resize → contrast restore (several headers carry a
+    white wash) → mild saturation → slight sharpen. Crops under 400 source pixels (`capacitacion-continua`,
+    `itec-labs`) cannot be sharp at 1024 px, so they get a soft upscale (light blur, no sharpening) instead.
+  - `--mode illustration` (kept, not used): the earlier flat, stylized look (median simplification →
+    palette gradient map → Sobel ink outlines → seeded grain).
 
 ```bash
-npm run illustrate                                   # regenerate public/bubbles/*.webp
-node scripts/contact-sheet.mjs /tmp/contact-sheet.png  # review all illustrations masked in circles
+npm run bubble-images                                # regenerate public/bubbles/*.webp from the photos
+npm run illustrate                                   # same, stylized illustration mode (not used by the site)
+node scripts/contact-sheet.mjs /tmp/contact-sheet.png  # review all images masked in circles
 ```
 
 To change a photo, replace the file in `assets/photos/`, update its `sources.json` entry (url, page, crop),
-run `npm run illustrate`, and update the offer's `imageAlt` in `app/data/content.js` to describe it.
+run `npm run bubble-images`, and update the offer's `imageAlt` in `app/data/content.js` to describe the photo.
 The signed `googleusercontent.com` URLs may expire; the committed originals are the reproducible input.
 
 ## Sound

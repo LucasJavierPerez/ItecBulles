@@ -1,4 +1,4 @@
-// Renders every bubble illustration masked in a circle, labeled by offer id, into one PNG
+// Renders every bubble image masked in a circle, labeled by offer id, into one PNG
 // for visual review. Usage: node scripts/contact-sheet.mjs <output.png>
 // The output path is required so review artifacts stay out of the repository.
 
@@ -50,4 +50,4 @@ await sharp({
   .composite(tiles.flat())
   .png()
   .toFile(out);
-console.log(`Contact sheet with ${files.length} illustrations: ${out}`);
+console.log(`Contact sheet with ${files.length} bubble images: ${out}`);

@@ -83,11 +83,11 @@
     "page": "https://www.itecriocuarto.org.ar/trayectos/Operario_electromecanico",
     "generic": false,
     "crop": {
-      "left": 1460,
-      "top": 250,
+      "left": 0,
+      "top": 470,
       "size": 460
     },
-    "note": "Industrial robotic machinery (trayecto page header); crop avoids the overlaid title. Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "note": "Hand operating a control tablet next to industrial machinery (trayecto page header); crop avoids the overlaid title. Stored re-encoded as JPEG q92 (source was a large PNG).",
     "retrieved": "2026-10-16"
   },
   "secundario-ada-byron": {
@@ -109,11 +109,11 @@
     "page": "https://cursos.itecriocuarto.org.ar",
     "generic": false,
     "crop": {
-      "left": 1050,
-      "top": 340,
-      "size": 230
+      "left": 940,
+      "top": 300,
+      "size": 340
     },
-    "note": "Front of the iTec building, from the photo inside the PCC In Company flyer on the course portal (low resolution source).",
+    "note": "Front of the iTec building with its sign, from the photo inside the PCC In Company flyer on the course portal (low resolution source: the 340 px crop is upscaled with a soft treatment).",
     "retrieved": "2026-10-16"
   },
   "itec-labs": {
@@ -126,7 +126,7 @@
       "top": 740,
       "size": 340
     },
-    "note": "GENERIC: the iTec Labs page shows only a logo, so this reuses the Desarrollo de Software header photo (hand-drawn flowchart on paper). Stored re-encoded as JPEG q92 (source was a large PNG).",
+    "note": "GENERIC: the iTec Labs page shows only a logo, so this reuses the Desarrollo de Software header photo (hand-drawn flowchart on paper; low resolution crop, soft upscale). Stored re-encoded as JPEG q92 (source was a large PNG).",
     "retrieved": "2026-10-16"
   },
   "portal-de-trabajo": {

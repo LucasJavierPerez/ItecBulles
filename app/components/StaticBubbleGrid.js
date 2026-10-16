@@ -1,5 +1,5 @@
 // Static bubble grid for the no-WebGL / reduced-motion mode: circular CSS bubbles
-// with the offer illustrations. Written as a render function so it can be unit
+// with the offer photos. Written as a render function so it can be unit
 // tested without the Vue SFC compiler.
 import { defineComponent, h } from 'vue';
 

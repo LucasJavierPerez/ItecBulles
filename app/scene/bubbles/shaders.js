@@ -1,5 +1,5 @@
 // GLSL for the bubble overworld. Colors are written in sRGB without conversion (like
-// the sky shader), except the illustration, which samples an sRGB texture (decoded to
+// the sky shader), except the bubble photo, which samples an sRGB texture (decoded to
 // linear) and converts back with three's colorspace chunk.
 
 // Ashima Arts / Stefan Gustavson 3D simplex noise (MIT).
@@ -126,7 +126,8 @@ export const SHELL_FRAGMENT = /* glsl */ `
     float spec = pow(max(dot(reflect(-l, n), v), 0.0), 48.0);
     color += spec;
 
-    float alpha = 0.05 + fresnel * 0.85 + spec * 0.8 + abs(vRipple) * 0.35;
+    // Nearly clear in the middle so the photo behind keeps its contrast; the film shows at the rim.
+    float alpha = 0.015 + fresnel * 0.8 + spec * 0.7 + abs(vRipple) * 0.35;
     gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0) * uOpacity);
   }
 `;
@@ -139,7 +140,7 @@ export const IMAGE_VERTEX = /* glsl */ `
   }
 `;
 
-// Illustration clipped to a circle; falls back to a flat color until (or unless)
+// Photo clipped to a circle; falls back to a flat color until (or unless)
 // the texture loads.
 export const IMAGE_FRAGMENT = /* glsl */ `
   uniform sampler2D uMap;

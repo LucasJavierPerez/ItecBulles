@@ -10,7 +10,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
-    "illustrate": "node scripts/illustrate.mjs",
+    "bubble-images": "node scripts/bubble-images.mjs",
+    "illustrate": "node scripts/bubble-images.mjs --mode illustration",
     "sounds": "node scripts/sounds.mjs"
   },
   "devDependencies": {
