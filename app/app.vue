@@ -1,11 +1,15 @@
 <script setup>
-import { computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue';
+import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useUiStore } from '~/stores/ui.js';
 import { institution, offers } from '~/data/content.js';
 import StaticBubbleGrid from '~/components/StaticBubbleGrid.js';
 import BubbleDetail from '~/components/BubbleDetail.js';
 import TutorialHint from '~/components/TutorialHint.js';
 import SoundToggle from '~/components/SoundToggle.js';
+import MotionToggle from '~/components/MotionToggle.js';
+import OfferList from '~/components/OfferList.js';
+import PracticalInfo from '~/components/PracticalInfo.js';
+import { announcementFor } from '~/data/announcements.js';
 import { sceneEvents } from '~/scene/events.js';
 import { createSoundManager } from '~/audio/soundManager.js';
 import { connectSound } from '~/audio/connectSound.js';
@@ -15,7 +19,23 @@ const ui = useUiStore();
 let motionQuery;
 let disconnectSound = null;
 let sound = null;
-const syncMotion = () => ui.setReducedMotion(motionQuery.matches);
+const syncMotion = () => ui.applySystemReducedMotion(motionQuery.matches);
+
+// Practical info drawer: open on the home screen, compact bar elsewhere.
+const infoExpanded = ref(true);
+watch(
+  () => ui.currentStep,
+  (step) => (infoExpanded.value = step === 'home'),
+);
+
+// Polite screen-reader announcement of every step / offer change.
+const announcement = ref('');
+watch(
+  () => [ui.currentStep, ui.activeOffer?.title],
+  ([step, offerTitle], [previousStep] = []) => {
+    announcement.value = announcementFor({ step, previousStep, offerTitle, offerCount: offers.length });
+  },
+);
 
 // One-time tutorials (Projet Bulles style), remembered in localStorage.
 const tutorial = computed(() => {
@@ -63,19 +83,26 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="bg-sky relative min-h-dvh overflow-hidden">
+  <div class="bg-sky relative min-h-dvh overflow-hidden" :data-motion="ui.reducedMotion ? 'reduced' : 'full'">
+    <a href="#contenido" class="skip-link">Saltar al contenido</a>
+
     <!-- Fullscreen three.js canvas behind the UI (static CSS sky when unavailable). -->
     <SceneCanvas />
 
     <!-- Always-visible settings (top-right). -->
     <div class="fixed top-4 right-4 z-50 flex gap-2 sm:top-6 sm:right-6">
       <SoundToggle :muted="ui.muted" @toggle="ui.toggleMute()" />
+      <MotionToggle :reduced="ui.reducedMotion" @toggle="ui.setUserReducedMotion(!ui.reducedMotion)" />
     </div>
 
     <!-- The UI layer lets pointer events through to the canvas; sections opt back in. -->
     <main
+      id="contenido"
+      tabindex="-1"
       class="pointer-events-none relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center [&>section]:pointer-events-auto"
     >
+      <h1 v-if="ui.currentStep !== 'home'" class="sr-only">{{ institution.name }} · Propuestas educativas</h1>
+
       <section v-if="ui.currentStep === 'home'" aria-labelledby="home-title" class="max-w-2xl">
         <p class="mb-4 text-lg font-medium">{{ institution.name }} · {{ institution.motto }}</p>
         <h1 id="home-title" class="text-6xl leading-[0.9] font-bold sm:text-8xl">Elegí tu burbuja</h1>
@@ -103,22 +130,11 @@ onBeforeUnmount(() => {
         class="fixed inset-x-0 top-8 px-6"
         style="pointer-events: none"
       >
-        <!-- WebGL bubbles live in the canvas. This list is the visually hidden but
-             accessible way in (T6 finalizes it); focusing a button glides the carousel. -->
+        <!-- WebGL bubbles live in the canvas. OfferList is the keyboard / screen-reader
+             way in; focusing one of its buttons glides the carousel. -->
         <h2 id="overworld-title" class="text-3xl font-bold sm:text-4xl">Propuestas</h2>
         <p class="mt-2 text-base">Arrastrá o usá la rueda para explorar. Tocá una burbuja para entrar.</p>
-        <ul class="sr-only">
-          <li v-for="offer in offers" :key="offer.id">
-            <button
-              type="button"
-              :data-offer-id="offer.id"
-              @click="ui.openBubble(offer.id)"
-              @focus="ui.focusBubble(offer.id)"
-            >
-              {{ offer.title }}
-            </button>
-          </li>
-        </ul>
+        <OfferList :offers="offers" @open="ui.openBubble" @focus="ui.focusBubble" />
       </section>
 
       <section v-else-if="ui.currentStep === 'overworld'" aria-labelledby="overworld-title" class="py-16">
@@ -143,5 +159,9 @@ onBeforeUnmount(() => {
         @dismiss="ui.completeTutorial(tutorial.name)"
       />
     </main>
+
+    <PracticalInfo v-model:expanded="infoExpanded" />
+
+    <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
   </div>
 </template>

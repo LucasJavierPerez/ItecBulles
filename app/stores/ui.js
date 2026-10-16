@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { offers } from '../data/content.js';
 import { loadCompletedTutorials, saveCompletedTutorials } from './tutorialStorage.js';
 import { loadMuted, saveMuted } from '../audio/soundManager.js';
+import { loadReducedMotionPreference, saveReducedMotionPreference } from './preferences.js';
 
 // UI state machine, mirroring the Projet Bulles `ui` store:
 //   home -> intro -> overworld <-> bubble
@@ -19,6 +20,8 @@ export const useUiStore = defineStore('ui', {
     completedTutorials: [],
     muted: false,
     reducedMotion: false,
+    // Visitor's own choice ("Reducir movimiento" toggle); null = follow the system.
+    reducedMotionPreference: null,
     // True while the three.js scene is mounted; false means static (DOM) mode.
     sceneActive: false,
     // Offer focused from the DOM list; the scene glides the carousel to it.
@@ -92,10 +95,29 @@ export const useUiStore = defineStore('ui', {
     // Restores persisted visitor preferences (client only, on mount).
     hydratePreferences() {
       this.muted = loadMuted();
+      const preference = loadReducedMotionPreference();
+      if (preference !== null) {
+        this.reducedMotionPreference = preference;
+        this.setReducedMotion(preference);
+      }
     },
 
     setReducedMotion(value) {
       this.reducedMotion = Boolean(value);
+      // Static mode has no camera flight: an intro in progress ends at once.
+      if (this.reducedMotion) this.completeIntro();
+    },
+
+    // prefers-reduced-motion from the OS; ignored once the visitor chose.
+    applySystemReducedMotion(matches) {
+      if (this.reducedMotionPreference !== null) return;
+      this.setReducedMotion(matches);
+    },
+
+    setUserReducedMotion(value) {
+      this.reducedMotionPreference = Boolean(value);
+      saveReducedMotionPreference(this.reducedMotionPreference);
+      this.setReducedMotion(this.reducedMotionPreference);
     },
 
     setSceneActive(value) {
