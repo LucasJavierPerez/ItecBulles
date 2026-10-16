@@ -34,7 +34,7 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - [ ] T4 Bubble overworld: pool of bubbles (one per offer), drag/wheel inertia (friction ~.92), edge arc, noise-wobble sphere + fresnel rim shell + circular inner image, hover ripple, click ripple transition. Route: delegated.
 - [ ] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
 - [ ] T6 Sound + accessibility: Howler ambience/hover/click with mute and first-gesture unlock; DOM list fallback with keyboard, reduced-motion static mode, no-WebGL fallback, practical info always reachable. Route: delegated.
-- [ ] T8 Bubble illustrations (runs before T4): download official photos per offer, `scripts/illustrate.mjs` with sharp produces `public/bubbles/<offer-id>.webp` (square, circular-safe), `image` + `imageSource` fields in content.js, tests that every offer has an existing illustration. Route: delegated.
+- [x] T8 Bubble illustrations (runs before T4): download official photos per offer, `scripts/illustrate.mjs` with sharp produces `public/bubbles/<offer-id>.webp` (square, circular-safe), `image` + `imageSource` fields in content.js, tests that every offer has an existing illustration. Route: delegated.
 - [ ] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 
 ## Acceptance criteria
@@ -59,7 +59,13 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
   - RED observed: `npx vitest run` → ui-store suite failed to resolve `app/stores/ui.js` (content suite 10 passed).
   - GREEN: `npm test` → 2 files, 26 tests passed (10 content + 16 ui store). `npm run build` → generated `.output/public`, `<html lang="es">`, title "iTec Río Cuarto · Ingreso 2027".
   - Font substitute: Bricolage Grotesque (Google Fonts) with system fallback stack. Risk tier: medium (writer self-verification).
+- T8 done · commit `f8006c0` (`feat: add bubble illustrations derived from official photos`). Route: delegated writer (2+ non-trivial files + photo research).
+  - RED observed: `npx vitest run tests/illustrations.test.js` → 3 failed (no `image`/`imageAlt`, no files under `public/bubbles`), 1 passed (sources.json written first).
+  - GREEN: `npm test` → 3 files, 30 tests passed. `npm run illustrate` → 11 webp, 70–97 KB each, byte-identical on re-run (deterministic). `npm run build` → OK, 11 files in `.output/public/bubbles`.
+  - Pipeline: `assets/photos/<id>.(jpg|png)` + `sources.json` (url, page, crop, note, generic) → `scripts/illustrate.mjs` (sharp: crop, median 15, palette gradient map by per-image luminance quantiles, Sobel ink outlines, seeded grain) → `public/bubbles/<id>.webp` 1024×1024. `scripts/contact-sheet.mjs <out.png>` for review. README documents regeneration.
+  - Photo sources: own-page photos for 10 offers (career pages use their header photo cropped to avoid baked-in titles; marketing uses an in-page desk photo; ingreso uses the home header building; Ada Byron uses the building photo on its page; capacitación uses the building photo inside the PCC flyer on cursos.itecriocuarto.org.ar, low-res source). Generic reuse: `itec-labs` (its page only has a logo) reuses the Desarrollo de Software header (hand-drawn flowchart crop).
+  - Notes: Google Sites image URLs are signed per request and must be fetched with a browser User-Agent; recorded URLs may expire, committed originals are the reproducible input. Large PNG originals re-encoded to JPEG q92 (repo weight 2.4 MB). Three offers show the same building (ingreso, Ada Byron, capacitación) with different crops. Risk tier: medium (writer self-verification).
 - Scope change (user, 2026-10-16): T2–T4 paused; stack and UI to be re-planned after a deeper study of experience.projetbulles.com (likely Nuxt/Vue + WebGL). Minimal Vite scaffold from T1 may be replaced.
 
 ## Next step
-D-08 resolved (illustrations from official photos). T2 done. Delegate T8, then T3–T6, then T7.
+T2 and T8 done. Delegate T3–T6 (T4 consumes `offer.image`/`offer.imageAlt`), then T7.
