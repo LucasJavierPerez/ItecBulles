@@ -57,6 +57,61 @@
   }
 }
 
+/* Title pill shown under the hovered / focused bubble. */
+@utility bubble-label {
+  display: inline-block;
+  max-width: 16rem;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  box-shadow: 0 6px 20px rgb(40 11 60 / 0.12);
+}
+
+/* Static-mode bubble: circular illustration with an iridescent rim. */
+.static-bubble__orb {
+  display: block;
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 9999px;
+  padding: 0.35rem;
+  background: conic-gradient(
+    from 210deg,
+    var(--color-bubble-yellow),
+    var(--color-bubble-pink),
+    var(--color-bubble-violet),
+    var(--color-bubble-magenta),
+    var(--color-bubble-yellow)
+  );
+  box-shadow:
+    inset 0 0 0 2px rgb(255 250 237 / 0.7),
+    0 10px 30px rgb(40 11 60 / 0.15);
+  transition: transform 400ms var(--ease-bubble);
+}
+
+@media (min-width: 640px) {
+  .static-bubble__orb {
+    width: 10rem;
+    height: 10rem;
+  }
+}
+
+.static-bubble:hover .static-bubble__orb,
+.static-bubble:focus-visible .static-bubble__orb {
+  transform: scale(1.05);
+}
+
+.static-bubble:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 6px;
+  border-radius: 1.5rem;
+}
+
 @layer base {
   html,
   body {

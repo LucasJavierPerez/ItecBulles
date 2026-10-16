@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount } from 'vue';
 import { useUiStore } from '~/stores/ui.js';
 import { institution, offers } from '~/data/content.js';
+import StaticBubbleGrid from '~/components/StaticBubbleGrid.js';
 
 const ui = useUiStore();
 
@@ -46,16 +47,29 @@ onBeforeUnmount(() => motionQuery?.removeEventListener('change', syncMotion));
         <button type="button" class="btn-pill" @click="ui.skipIntro()">Saltar intro</button>
       </section>
 
-      <section v-else-if="ui.currentStep === 'overworld'" aria-labelledby="overworld-title">
-        <!-- T4 replaces this list with the WebGL bubbles (T6 keeps it as the accessible fallback). -->
-        <h2 id="overworld-title" class="mb-6 text-4xl font-bold">Propuestas</h2>
-        <ul class="flex max-w-3xl flex-wrap justify-center gap-3">
+      <section
+        v-else-if="ui.currentStep === 'overworld' && ui.sceneActive"
+        aria-labelledby="overworld-title"
+        class="fixed inset-x-0 top-8 px-6"
+        style="pointer-events: none"
+      >
+        <!-- WebGL bubbles live in the canvas. This list is the visually hidden but
+             accessible way in (T6 finalizes it); focusing a button glides the carousel. -->
+        <h2 id="overworld-title" class="text-3xl font-bold sm:text-4xl">Propuestas</h2>
+        <p class="mt-2 text-base">Arrastrá o usá la rueda para explorar. Tocá una burbuja para entrar.</p>
+        <ul class="sr-only">
           <li v-for="offer in offers" :key="offer.id">
-            <button type="button" class="btn-pill" @click="ui.openBubble(offer.id)">
+            <button type="button" @click="ui.openBubble(offer.id)" @focus="ui.focusBubble(offer.id)">
               {{ offer.title }}
             </button>
           </li>
         </ul>
+      </section>
+
+      <section v-else-if="ui.currentStep === 'overworld'" aria-labelledby="overworld-title" class="py-16">
+        <!-- Static mode (no WebGL or reduced motion): CSS bubbles with the illustrations. -->
+        <h2 id="overworld-title" class="mb-8 text-4xl font-bold">Propuestas</h2>
+        <StaticBubbleGrid :offers="offers" @open="ui.openBubble" />
       </section>
 
       <section

@@ -140,4 +140,21 @@ describe('ui store', () => {
     ui.setReducedMotion(0);
     expect(ui.reducedMotion).toBe(false);
   });
+  it('tracks whether the WebGL scene is active', () => {
+    const ui = useUiStore();
+    expect(ui.sceneActive).toBe(false);
+    ui.setSceneActive(true);
+    expect(ui.sceneActive).toBe(true);
+    ui.setSceneActive(0);
+    expect(ui.sceneActive).toBe(false);
+  });
+
+  it('focusBubble stores a valid offer id and ignores unknown ids', () => {
+    const ui = useUiStore();
+    expect(ui.focusedBubbleId).toBeNull();
+    ui.focusBubble(validId);
+    expect(ui.focusedBubbleId).toBe(validId);
+    ui.focusBubble('nope');
+    expect(ui.focusedBubbleId).toBe(validId);
+  });
 });

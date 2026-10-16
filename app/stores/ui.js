@@ -17,6 +17,10 @@ export const useUiStore = defineStore('ui', {
     completedTutorials: [],
     muted: false,
     reducedMotion: false,
+    // True while the three.js scene is mounted; false means static (DOM) mode.
+    sceneActive: false,
+    // Offer focused from the DOM list; the scene glides the carousel to it.
+    focusedBubbleId: null,
   }),
 
   getters: {
@@ -68,6 +72,15 @@ export const useUiStore = defineStore('ui', {
 
     setReducedMotion(value) {
       this.reducedMotion = Boolean(value);
+    },
+
+    setSceneActive(value) {
+      this.sceneActive = Boolean(value);
+    },
+
+    focusBubble(id) {
+      if (!OFFER_IDS.has(id)) return;
+      this.focusedBubbleId = id;
     },
   },
 });
