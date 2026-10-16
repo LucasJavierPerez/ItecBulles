@@ -1,0 +1,326 @@
+<title>Bitácora Burbujas iTec</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a working lab notebook — one reading column, wide comparison table, bubble dots mark each log entry */
+:root{
+  --paper:#f3f4f8; --surface:#ffffff; --ink:#1d2033; --muted:#5d6280; --line:#d9dbe6;
+  --coral:#e2603f; --peri:#6c74d9; --amber:#e8a33a;
+  --ok:#2f8a5b; --warn:#b7791f; --bad:#c2413a;
+  --display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#13151f; --surface:#1b1e2c; --ink:#e8e9f2; --muted:#a2a6c2; --line:#2e3247;
+  --coral:#f07a5a; --peri:#9aa0f0; --amber:#f0b95a; --ok:#5cc28d; --warn:#e3a94a; --bad:#ef6f66; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#13151f; --surface:#1b1e2c; --ink:#e8e9f2; --muted:#a2a6c2; --line:#2e3247;
+  --coral:#f07a5a; --peri:#9aa0f0; --amber:#f0b95a; --ok:#5cc28d; --warn:#e3a94a; --bad:#ef6f66; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:980px;margin:0 auto}
+.col{max-width:68ch}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+a{color:var(--peri)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--coral);outline-offset:2px;border-radius:4px}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Hero */
+header{position:relative;padding-block:56px 40px;overflow:hidden}
+.blobs{position:absolute;inset:0;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.85;mix-blend-mode:multiply}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .blob{mix-blend-mode:screen;opacity:.35}}
+:root[data-theme="dark"] .blob{mix-blend-mode:screen;opacity:.35}
+.b1{width:220px;height:220px;right:4%;top:20px;background:radial-gradient(circle at 35% 30%,#fff8 0 12%,transparent 13%),var(--peri)}
+.b2{width:120px;height:120px;right:24%;top:150px;background:radial-gradient(circle at 35% 30%,#fff8 0 12%,transparent 13%),var(--coral)}
+.b3{width:70px;height:70px;right:2%;top:210px;background:radial-gradient(circle at 35% 30%,#fff8 0 12%,transparent 13%),var(--amber)}
+@media (prefers-reduced-motion: no-preference){
+  .blob{animation:float 9s ease-in-out infinite}
+  .b2{animation-duration:7s;animation-delay:-2s}.b3{animation-duration:11s;animation-delay:-4s}
+  @keyframes float{50%{transform:translateY(-14px) scale(1.03)}}
+}
+.hero{position:relative;z-index:1;display:grid;gap:18px}
+h1{font-size:clamp(2.4rem,7vw,4.6rem);font-weight:800;letter-spacing:-.03em;max-width:13ch}
+h1 em{font-style:normal;color:var(--coral)}
+.lede{font-size:1.15rem;color:var(--muted);max-width:56ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+@media (max-width:640px){.blobs{opacity:.4}}
+
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;padding-block:8px 32px;border-bottom:1px solid var(--line)}
+nav.toc a{font-family:var(--mono);font-size:.78rem;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--peri)}
+
+section{padding-block:52px 8px;display:grid;gap:22px}
+
+/* Prompt */
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;font-family:var(--mono);font-size:.9rem;line-height:1.7;position:relative}
+.prompt::before{content:"usuario · 16/10/2026 09:38";display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin-bottom:10px}
+.saved{font-size:.92rem;color:var(--muted)}
+.saved code,td code,li code,p code{font-family:var(--mono);font-size:.85em;background:color-mix(in srgb,var(--peri) 12%,transparent);padding:1px 6px;border-radius:5px}
+
+/* Workflow */
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:s}
+.flow li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:6px;align-content:start}
+.flow li::before{content:"Paso " counter(s);font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.flow li.done{border-color:color-mix(in srgb,var(--ok) 55%,var(--line))}
+.flow li strong{font-family:var(--display);font-size:1.05rem}
+.flow li span{font-size:.92rem;color:var(--muted)}
+.state{justify-self:start;font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.state.ok{color:var(--ok)}.state.next{color:var(--peri)}.state.later{color:var(--muted)}
+
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 28px}
+.tool{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding-block:10px;border-top:1px solid var(--line)}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--peri);transform:translateY(2px)}
+.dot.used{background:var(--coral)}
+.tool b{font-weight:700}
+.tool p{grid-column:2;font-size:.9rem;color:var(--muted)}
+.legend{display:flex;gap:18px;font-size:.85rem;color:var(--muted);align-items:center;flex-wrap:wrap}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+
+/* Table */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}
+thead th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tbody th{font-family:var(--display);font-size:1rem;white-space:nowrap}
+tbody tr:last-child>*{border-bottom:0}
+td.op{background:color-mix(in srgb,var(--coral) 7%,transparent)}
+
+/* Findings */
+.findings{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.findings li{display:grid;grid-template-columns:86px 1fr;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.sev{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:6px;text-align:center}
+.sev.h{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.sev.m{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.sev.l{color:var(--muted);background:color-mix(in srgb,var(--muted) 12%,transparent)}
+.findings p{font-size:.95rem}
+.findings small{display:block;color:var(--muted);font-size:.85rem}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:grid;gap:12px;align-content:start;min-width:0}
+.panel ul{margin:0;padding-left:1.1em;display:grid;gap:8px;font-size:.95rem}
+.panel.take h3{color:var(--ok)}.panel.avoid h3{color:var(--bad)}
+
+/* Concept map */
+.map{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center}
+.bub{border-radius:50%;display:grid;place-items:center;text-align:center;font-family:var(--display);font-weight:700;line-height:1.1;padding:10px;color:var(--ink);
+  background:radial-gradient(circle at 32% 28%,color-mix(in srgb,var(--surface) 80%,transparent) 0 10%,transparent 11%),color-mix(in srgb,var(--c) 30%,var(--surface));border:2px solid var(--c)}
+.bub small{display:block;font-family:var(--body);font-weight:400;font-size:.72rem;color:var(--muted);margin-top:4px}
+.xl{width:170px;height:170px;font-size:1.25rem;--c:var(--coral)}
+.lg{width:132px;height:132px;font-size:1rem;--c:var(--peri)}
+.md{width:108px;height:108px;font-size:.88rem;--c:var(--amber)}
+.sm{width:88px;height:88px;font-size:.78rem;--c:var(--muted)}
+.out{opacity:.5;border-style:dashed}
+
+/* Phases */
+.phases{display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.phase{position:relative;padding:0 0 22px 26px;display:grid;gap:4px}
+.phase::before{content:"";position:absolute;left:-8px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--muted)}
+.phase.now::before{background:var(--coral);border-color:var(--coral)}
+.phase.done::before{background:var(--ok);border-color:var(--ok)}
+.phase p{font-size:.95rem;color:var(--muted)}
+.phase .tag{font-family:var(--mono);font-size:.72rem;color:var(--peri)}
+
+.decisions{display:grid;gap:10px}
+.dec{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:baseline;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.dec code{font-family:var(--mono);color:var(--muted);font-size:.8rem}
+.dec .st{font-family:var(--mono);font-size:.72rem}
+.st.firm{color:var(--ok)}.st.prop{color:var(--warn)}
+@media (max-width:520px){.dec{grid-template-columns:44px 1fr}.dec .st{grid-column:2}.findings li{grid-template-columns:1fr;gap:6px}.sev{justify-self:start}}
+
+.next{background:var(--ink);color:var(--paper);border-radius:16px;padding:26px 28px;display:grid;gap:10px}
+.next h3{font-size:1.3rem}
+.next p{color:color-mix(in srgb,var(--paper) 80%,transparent)}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="blobs" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="hero">
+    <p class="eyebrow">Interfaz de Usuario · Bitácora de proyecto</p>
+    <h1>iTec Río Cuarto, <em>en burbujas</em></h1>
+    <p class="lede">Rediseño del sitio institucional del iTec tomando como referencia la experiencia inmersiva de Projet Bulles. Esta bitácora registra qué pedimos, cómo trabajamos con IA y qué fuimos decidiendo.</p>
+    <div class="meta">
+      <span>Inicio <b>16/10/2026</b></span>
+      <span>Fase <b>1 · Definición</b></span>
+      <span>Público <b>aspirantes</b></span>
+      <span>Alcance <b>sin logins</b></span>
+      <span>Entradas <b>2</b></span>
+      <span>Repo <a href="https://github.com/LucasJavierPerez/ItecBulles">ItecBulles</a></span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
+  <a href="#hallazgos">Hallazgos iTec</a><a href="#referencia">Qué tomar de Bulles</a><a href="#concepto">Concepto</a>
+  <a href="#plan">Plan</a><a href="#decisiones">Decisiones</a>
+</nav>
+
+<section id="prompt">
+  <p class="eyebrow">Entrada 001</p>
+  <h2>El prompt que dio inicio</h2>
+  <div class="prompt">vamos a iniciar un proyecto nuevo, necesito que utilices las tools de diseño que tengas a disposicion, las de planeamiento, etc. quiero documentar como trabajamos tambien, asi que quiero hacer un artefacto para compartir. este primer prompt tambien guardalo. Proyecto, transformar esto: https://www.itecriocuarto.org.ar/ en algo parecido a esto: https://experience.projetbulles.com/. hay que analizar funcionalidades, UX, usabilidad, contenidos. No vamos a incluir logins</div>
+  <p class="saved col">Guardado en dos lugares: la memoria persistente del agente (Engram, proyecto <code>diseñobullets</code>) y el repositorio, en <code>docs/bitacora/001-prompt-inicial.md</code>. Desde la entrada 002, cada archivo guarda el prompt y la respuesta completa del agente.</p>
+</section>
+
+<section id="e002">
+  <p class="eyebrow">Entrada 002</p>
+  <h2>Repositorio y público objetivo</h2>
+  <div class="prompt">para el repo: echo "# ItecBulles" &gt;&gt; README.md · git init · git add README.md · git commit -m "first commit" · git branch -M main · git remote add origin https://github.com/LucasJavierPerez/ItecBulles.git · git push -u origin main. Guarda tu respuesta y todas las que vengan. Definicion: esta dirigido a aspirantes a ingresar.</div>
+  <p class="saved col">Repositorio publicado en <a href="https://github.com/LucasJavierPerez/ItecBulles">github.com/LucasJavierPerez/ItecBulles</a> (commit <code>df9e802</code>). Queda decidido el público: aspirantes a ingresar. Respuesta completa en <code>docs/bitacora/002-repo-y-publico.md</code>.</p>
+</section>
+
+<section id="metodo">
+  <p class="eyebrow">Método</p>
+  <h2>Cómo trabajamos</h2>
+  <p class="col">La persona dirige y decide; el agente investiga, propone y ejecuta, y deja registro. Ninguna línea de código se escribe antes de cerrar el análisis y las decisiones de producto.</p>
+  <ol class="flow">
+    <li class="done"><strong>Registrar</strong><span>Guardar el pedido tal cual, en memoria y en el repo.</span><em class="state ok">hecho</em></li>
+    <li class="done"><strong>Investigar</strong><span>Leer ambos sitios: estructura, contenido, tecnología, comportamiento real en navegador.</span><em class="state ok">hecho</em></li>
+    <li class="done"><strong>Analizar</strong><span>Comparar funcionalidades, UX, usabilidad y contenidos.</span><em class="state ok">hecho</em></li>
+    <li><strong>Definir</strong><span>Preguntas de producto, una por vez. Arquitectura de información.</span><em class="state next">en curso</em></li>
+    <li><strong>Diseñar</strong><span>Sistema visual, wireframes, prototipo de la interacción de burbujas.</span><em class="state later">pendiente</em></li>
+    <li><strong>Construir y verificar</strong><span>Implementación por tareas, accesibilidad y rendimiento medidos.</span><em class="state later">pendiente</em></li>
+  </ol>
+
+  <h3>Herramientas</h3>
+  <div class="legend"><span><i class="dot used"></i>usada en esta sesión</span><span><i class="dot"></i>prevista</span></div>
+  <div class="tools">
+    <div class="tool"><i class="dot used"></i><b>Engram</b><p>Memoria entre sesiones. Guarda prompts, decisiones y hallazgos.</p></div>
+    <div class="tool"><i class="dot used"></i><b>WebFetch</b><p>Lectura del HTML de ambos sitios: menús, secciones, enlaces.</p></div>
+    <div class="tool"><i class="dot used"></i><b>Claude in Chrome</b><p>Navegador real: inspección del DOM, librerías cargadas, capturas.</p></div>
+    <div class="tool"><i class="dot used"></i><b>Artifact</b><p>Esta bitácora, publicada como página para compartir.</p></div>
+    <div class="tool"><i class="dot"></i><b>Brainstorming y writing-plans</b><p>Definir el producto y escribir el plan de implementación.</p></div>
+    <div class="tool"><i class="dot"></i><b>Design: critique, accessibility, UX copy</b><p>Revisar wireframes, contraste, teclado y textos.</p></div>
+    <div class="tool"><i class="dot"></i><b>Figma (opcional)</b><p>Wireframes y design system, si el equipo lo usa.</p></div>
+    <div class="tool"><i class="dot"></i><b>Prototype</b><p>Prototipo descartable para validar la navegación por burbujas.</p></div>
+  </div>
+</section>
+
+<section id="comparativa">
+  <p class="eyebrow">Análisis</p>
+  <h2>Sitio actual frente a la referencia</h2>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th scope="col">Dimensión</th><th scope="col">iTec hoy</th><th scope="col">Projet Bulles</th><th scope="col">Oportunidad</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Funcionalidades</th>
+          <td>Menú de 8 ítems con submenús, 5 carreras, secundario Ada Byron, PCC Cursos, Portal de Trabajo, iTec Labs, formularios de Google, WhatsApp.</td>
+          <td>Explorar burbujas de otros, crear la propia, galería, recursos para docentes (PDF y formulario), selector de idioma.</td>
+          <td class="op">Explorar la oferta como un espacio: cada propuesta es una burbuja que se abre con su información y un único CTA.</td></tr>
+        <tr><th scope="row">UX</th>
+          <td>Página de Google Sites con tarjetas estáticas. Recorrido lineal, sin narrativa.</td>
+          <td>Intro omitible, carga con fondo animado, audio opcional, mensajes en segunda persona.</td>
+          <td class="op">Un recorrido con relato: "¿Qué querés estudiar?" antes que un listado de menús.</td></tr>
+        <tr><th scope="row">Usabilidad</th>
+          <td>"Trayectos" sin enlace, secundario bajo título de nivel superior, tres entradas distintas para inscribirse, encabezados vacíos.</td>
+          <td>Navegación mínima y clara, pero el propio sitio declara que no está optimizado para lectores de pantalla.</td>
+          <td class="op">Inmersivo y accesible a la vez: teclado, lector de pantalla y versión sin animación.</td></tr>
+        <tr><th scope="row">Contenidos</th>
+          <td>Completo pero disperso: dos sedes con horarios, contactos, video en Drive sin contexto, "Ingreso 2027" sin fechas.</td>
+          <td>Poco texto, muy visual; los contenidos son creaciones de los propios alumnos.</td>
+          <td class="op">Reescribir en tono cercano; sumar voces de estudiantes y proyectos de iTec Labs.</td></tr>
+        <tr><th scope="row">Tecnología</th>
+          <td>Google Sites. Enlaces externos pasan por redirecciones de Google.</td>
+          <td>Nuxt, DatoCMS, 2 canvas WebGL, Howler.js para audio, GTM y reCAPTCHA.</td>
+          <td class="op">Stack a definir. Un CMS o archivos de contenido para que el iTec edite sin programar.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="hallazgos">
+  <p class="eyebrow">Usabilidad</p>
+  <h2>Problemas del sitio actual</h2>
+  <ul class="findings col">
+    <li><span class="sev h">Alta</span><p>Tres caminos distintos para inscribirse<small>"Quiero + Info", "Cargar Formulario de Admisión" y la tarjeta de Ada Byron llevan a formularios diferentes.</small></p></li>
+    <li><span class="sev h">Alta</span><p>El secundario aparece bajo "Tecnicaturas de Nivel Superior"<small>Además se llama "Secundario" en el menú y "Nivel Medio" en la tarjeta.</small></p></li>
+    <li><span class="sev m">Media</span><p>"Trayectos" en el menú no lleva a ningún lado<small>Es una etiqueta sin enlace propio.</small></p></li>
+    <li><span class="sev m">Media</span><p>Encabezados vacíos y anclas sin texto<small>Afecta a lectores de pantalla y a la navegación por títulos.</small></p></li>
+    <li><span class="sev m">Media</span><p>"Ingreso 2027" sin fechas ni plazos<small>El llamado principal no dice cuándo ni cómo termina.</small></p></li>
+    <li><span class="sev l">Baja</span><p>Video de Drive sin título ni descripción<small>No queda claro qué muestra antes de reproducirlo.</small></p></li>
+    <li><span class="sev l">Baja</span><p>Enlaces externos con redirección de Google<small>SiTec, PCC Cursos y redes sociales.</small></p></li>
+  </ul>
+</section>
+
+<section id="referencia">
+  <p class="eyebrow">Referencia</p>
+  <h2>Qué tomar de Bulles y qué no</h2>
+  <div class="two">
+    <div class="panel take"><h3>Adoptar</h3><ul>
+      <li>Una sola metáfora que organiza todo el sitio.</li>
+      <li>Fondo vivo de gradiente animado como identidad.</li>
+      <li>Textos en segunda persona y CTAs directos ("Quiero crear mi bulle").</li>
+      <li>Intro que se puede saltar y audio solo si la persona lo activa.</li>
+    </ul></div>
+    <div class="panel avoid"><h3>Evitar</h3><ul>
+      <li>Excluir lectores de pantalla; lo declaran en el propio sitio.</li>
+      <li>Carga bloqueante: en nuestra prueba con navegador automatizado quedó fija en "Chargement de l'expérience".</li>
+      <li>Depender de WebGL sin versión alternativa.</li>
+      <li>Ocultar información práctica (horarios, sedes, contacto) detrás de la experiencia.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="concepto">
+  <p class="eyebrow">Propuesta inicial · a validar</p>
+  <h2>Cada propuesta educativa es una burbuja</h2>
+  <p class="col">El inicio muestra el ingreso como burbuja principal y la oferta flotando alrededor. Al abrir una burbuja se ve qué se estudia, cuánto dura, en qué sede y un único botón para pedir información. Sede, horarios y contacto quedan siempre a un toque.</p>
+  <div class="map" role="img" aria-label="Mapa de burbujas: Ingreso 2027 al centro; carreras, Ada Byron, capacitación, iTec Labs y Portal de Trabajo alrededor; SiTec fuera de alcance">
+    <div class="bub md">Software<small>carrera</small></div>
+    <div class="bub lg">Inteligencia Artificial<small>carrera</small></div>
+    <div class="bub md">Mecatrónica<small>carrera</small></div>
+    <div class="bub xl">Ingreso 2027<small>empezá acá</small></div>
+    <div class="bub md">Marketing Digital<small>carrera</small></div>
+    <div class="bub md">Turismo y Hotelería<small>carrera</small></div>
+    <div class="bub lg">Ada Byron<small>secundario</small></div>
+    <div class="bub sm">Capacitación continua</div>
+    <div class="bub sm">iTec Labs</div>
+    <div class="bub sm">Portal de Trabajo</div>
+    <div class="bub sm out">SiTec<small>sin login</small></div>
+  </div>
+</section>
+
+<section id="plan">
+  <p class="eyebrow">Plan</p>
+  <h2>Fases del proyecto</h2>
+  <div class="phases col">
+    <div class="phase done"><span class="tag">Fase 0 · hecha</span><h3>Descubrimiento</h3><p>Análisis de ambos sitios y esta bitácora.</p></div>
+    <div class="phase now"><span class="tag">Fase 1 · en curso</span><h3>Definición</h3><p>Público principal (definido: aspirantes), acción principal, inventario de contenidos y arquitectura de información.</p></div>
+    <div class="phase"><span class="tag">Fase 2</span><h3>Diseño</h3><p>Moodboard, sistema visual (color, tipografía, movimiento) y wireframes de inicio y burbuja abierta.</p></div>
+    <div class="phase"><span class="tag">Fase 3</span><h3>Prototipo</h3><p>Prueba de la interacción de burbujas en escritorio y celular, con versión sin animación.</p></div>
+    <div class="phase"><span class="tag">Fase 4</span><h3>Implementación</h3><p>Construcción por tareas, con commits por unidad de trabajo.</p></div>
+    <div class="phase"><span class="tag">Fase 5</span><h3>Verificación</h3><p>Accesibilidad (WCAG AA), rendimiento en celulares de gama media y prueba con estudiantes.</p></div>
+  </div>
+</section>
+
+<section id="decisiones">
+  <p class="eyebrow">Registro</p>
+  <h2>Decisiones</h2>
+  <div class="decisions">
+    <div class="dec"><code>D-01</code><span>Sin logins. SiTec y cualquier autenticación quedan fuera de alcance.</span><span class="st firm">firme</span></div>
+    <div class="dec"><code>D-02</code><span>La accesibilidad es requisito, no extra: la experiencia funciona con teclado, lector de pantalla y movimiento reducido.</span><span class="st prop">propuesta</span></div>
+    <div class="dec"><code>D-03</code><span>Un único camino de inscripción en todo el sitio.</span><span class="st prop">propuesta</span></div>
+    <div class="dec"><code>D-04</code><span>El sitio está dirigido a aspirantes a ingresar.</span><span class="st firm">firme</span></div>
+    <div class="dec"><code>D-05</code><span>Lo que usan los alumnos actuales (horarios, calendario, SiTec) pasa al pie del sitio como enlaces secundarios.</span><span class="st prop">propuesta</span></div>
+  </div>
+  <div class="next">
+    <h3>Próximo paso</h3>
+    <p>Seguir la definición con una pregunta por vez. La siguiente: ¿cuál es la acción principal de un aspirante: completar un formulario, escribir por WhatsApp o inscribirse directamente?</p>
+  </div>
+</section>
+
+<footer>Bitácora mantenida con Claude Code. Fuentes: itecriocuarto.org.ar y experience.projetbulles.com, revisados el 16/10/2026.</footer>
+</div>
