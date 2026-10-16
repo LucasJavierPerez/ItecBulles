@@ -35,7 +35,9 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - [x] T5 Inner bubble (offer detail): ambiance background, floating info items (modalidad, perfil, salida laboral, requisitos), CTA "Quiero + Info", back to bubbles; one-time tutorials. Route: delegated.
 - [x] T6 Sound + accessibility: Howler ambience/hover/click with mute and first-gesture unlock; DOM list fallback with keyboard, reduced-motion static mode, no-WebGL fallback, practical info always reachable. Route: delegated.
 - [x] T8 Bubble illustrations (runs before T4): download official photos per offer, `scripts/illustrate.mjs` with sharp produces `public/bubbles/<offer-id>.webp` (square, circular-safe), `image` + `imageSource` fields in content.js, tests that every offer has an existing illustration. Route: delegated.
-- [x] T7 Verification + log: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
+- [x] T7 Verification + log
+- [ ] T9 Real photos in bubbles (user feedback 2026-10-16: "las imágenes de las burbujas no se entienden, tal vez las imágenes reales son mejores"): bubbles show the official photos (square crops from `assets/photos/sources.json`) instead of the stylized illustrations; keep the stylize mode available but off; update `imageAlt` to describe photos. Supersedes the D-08 visual treatment. Route: delegated.
+- [ ] T10 Overworld composition (user feedback: going from the tree to the bubbles the camera drops and the tree disappears): keep the island and tree visible in the overworld, raise the bubble row so it sits higher on screen, and rotate the island/tree around its vertical axis in sync with carousel scrolling so it turns in the middle while browsing. Route: delegated.: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 
 ## Acceptance criteria
 - `npm test` and `npm run build` pass.
