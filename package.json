@@ -5,14 +5,25 @@
   "description": "Immersive, accessible landing page for iTec Río Cuarto prospective students.",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "nuxt dev",
+    "build": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "jsdom": "^29.1.1",
-    "vite": "^8.3.4",
+    "tailwindcss": "^4.3.3",
     "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^1.0.3",
+    "gsap": "^3.15.0",
+    "howler": "^2.2.4",
+    "nuxt": "^4.5.2",
+    "pinia": "^4.1.0",
+    "three": "^0.186.1",
+    "vue": "^3.5.44"
   }
 }

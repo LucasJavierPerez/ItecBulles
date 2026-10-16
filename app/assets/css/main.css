@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+
+/* Design tokens taken from Projet Bulles (see docs/referencia/bulles-teardown.md).
+   Apfel Grotezk is not on Google Fonts; Bricolage Grotesque is the free substitute. */
+@theme {
+  --color-blue: #8da0fb;
+  --color-purple: #b88ff4;
+  --color-lilac: #e1e2fe;
+  --color-yellow: #fbc77a;
+  --color-cream: #fffaed;
+  --color-ink: #280b3c;
+  --color-success: #56c6a7;
+  --color-error: #e73333;
+
+  --color-bubble-yellow: #ffd333;
+  --color-bubble-violet: #8c00ff;
+  --color-bubble-pink: #ff94b6;
+  --color-bubble-magenta: #ff0090;
+
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --ease-bubble: cubic-bezier(0.32, 0.94, 0.6, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --background-image-sky: linear-gradient(108deg, #8da0fb 0%, #b88ff4 25%, #fbc77a 100%);
+}
+
+@utility bg-sky {
+  background-image: var(--background-image-sky);
+}
+
+/* Pill button: the single button shape used across the experience. */
+@utility btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  transition:
+    transform 300ms var(--ease-bubble),
+    background-color 300ms var(--ease-standard);
+
+  &:hover {
+    transform: scale(1.04);
+    background-color: var(--color-lilac);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-blue);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}

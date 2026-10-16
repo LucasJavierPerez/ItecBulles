@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { offers, campuses, contacts, links, institution, KINDS } from '../src/content.js';
+import { offers, campuses, contacts, links, institution, KINDS } from '../app/data/content.js';
 
 const OFFICIAL_HOST = 'www.itecriocuarto.org.ar';
 
