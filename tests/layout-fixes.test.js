@@ -55,7 +55,7 @@ describe('TutorialHint placement', () => {
 
 describe('BUBBLE camera framing', () => {
   it('keeps the legacy framing without an aspect', () => {
-    expect(getCameraState('BUBBLE')).toEqual({ position: [0, 0.35, 3.2], target: [0, 0.35, 0] });
+    expect(getCameraState('BUBBLE')).toEqual({ position: [0, 5.6, 5.7], target: [0, 5.6, 2.5] });
   });
 
   it('puts the opened bubble on the right half on wide screens', () => {
@@ -72,7 +72,7 @@ describe('BUBBLE camera framing', () => {
     expect(anchor.y).toBeGreaterThan(0.3);
     const state = getCameraState('BUBBLE', 390 / 844);
     expect(state.position[0]).toBe(0);
-    expect(state.target[1]).toBeLessThan(0);
+    expect(state.target[1]).toBeLessThan(getCameraState('BUBBLE').target[1]);
   });
 });
 

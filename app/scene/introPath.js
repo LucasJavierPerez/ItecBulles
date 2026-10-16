@@ -1,7 +1,7 @@
 // Intro camera flight: HOME -> up into the sky -> over and around the floating
 // island -> down to OVERWORLD. Bulles loads this curve from introPath.glb; here it
 // is a uniform Catmull-Rom spline through hand-placed points (no asset to load).
-import { CAMERA_STATES, ISLAND_FOCUS } from './cameraStates.js';
+import { CAMERA_STATES, ISLAND_FOCUS, getCameraState } from './cameraStates.js';
 
 export const INTRO_DURATION = 5; // seconds
 
@@ -10,10 +10,16 @@ export const INTRO_POINTS = Object.freeze([
   [2.5, 7.5, 5],
   [4, 9, -2],
   [-1.5, 8, -5],
-  [-4.5, 4.5, 0],
-  [-1.5, 1.5, 4],
+  [-4.5, 6, 1],
+  [-2.5, 5.5, 7],
   CAMERA_STATES.OVERWORLD.position,
 ]);
+
+// Same flight, ending at the OVERWORLD state framed for this viewport aspect
+// (portrait screens settle further back), so the intro never jumps at the end.
+export function introPointsFor(aspect) {
+  return [...INTRO_POINTS.slice(0, -1), getCameraState('OVERWORLD', aspect).position];
+}
 
 const clamp01 = (t) => Math.min(1, Math.max(0, t));
 
@@ -47,9 +53,10 @@ const smoothstep = (edge0, edge1, x) => {
   return k * k * (3 - 2 * k);
 };
 
-// Look at the island for most of the flight, then settle on the OVERWORLD target.
-export function targetAt(t) {
+// Look at the island for most of the flight, then settle on the OVERWORLD target
+// (framed for `aspect` when given).
+export function targetAt(t, aspect) {
   const blend = smoothstep(0.55, 1, clamp01(t));
-  const end = CAMERA_STATES.OVERWORLD.target;
+  const end = getCameraState('OVERWORLD', aspect).target;
   return ISLAND_FOCUS.map((v, i) => v + (end[i] - v) * blend);
 }

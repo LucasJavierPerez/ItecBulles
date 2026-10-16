@@ -3,10 +3,11 @@ import {
   INTRO_DURATION,
   INTRO_POINTS,
   catmullRom,
+  introPointsFor,
   pointAt,
   targetAt,
 } from '../app/scene/introPath.js';
-import { CAMERA_STATES } from '../app/scene/cameraStates.js';
+import { CAMERA_STATES, getCameraState } from '../app/scene/cameraStates.js';
 
 const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
@@ -59,5 +60,16 @@ describe('intro path', () => {
     expect(targetAt(0)).toEqual(CAMERA_STATES.HOME.target);
     const end = targetAt(1);
     CAMERA_STATES.OVERWORLD.target.forEach((v, i) => expect(end[i]).toBeCloseTo(v, 9));
+  });
+
+  it('ends exactly at the aspect-framed OVERWORLD state (no jump on phones)', () => {
+    for (const aspect of [1440 / 900, 390 / 844]) {
+      const overworld = getCameraState('OVERWORLD', aspect);
+      const end = pointAt(1, introPointsFor(aspect));
+      overworld.position.forEach((v, i) => expect(end[i]).toBeCloseTo(v, 9));
+      const look = targetAt(1, aspect);
+      overworld.target.forEach((v, i) => expect(look[i]).toBeCloseTo(v, 9));
+      expect(introPointsFor(aspect).slice(0, -1)).toEqual(INTRO_POINTS.slice(0, -1));
+    }
   });
 });

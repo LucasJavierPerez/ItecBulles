@@ -14,7 +14,8 @@ import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import { getCameraState, ISLAND_FOCUS } from './cameraStates.js';
 import { createParallax } from './parallax.js';
-import { INTRO_DURATION, pointAt, targetAt } from './introPath.js';
+import { INTRO_DURATION, introPointsFor, pointAt, targetAt } from './introPath.js';
+import { approachAngle } from './islandTurn.js';
 import { clampPixelRatio } from './renderSettings.js';
 
 gsap.registerPlugin(CustomEase);
@@ -128,6 +129,9 @@ export class Experience {
     this.elapsed = 0;
     this.lastTime = null;
     this.random = mulberry32(2027);
+    // Island turn driven by the carousel (setIslandTurn); `islandAngle` eases towards it.
+    this.islandTurn = 0;
+    this.islandAngle = 0;
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -215,7 +219,11 @@ export class Experience {
   playIntro() {
     this.cameraTween?.kill();
     this.cancelIntro();
+    this.cameraStateName = 'OVERWORLD';
     const proxy = { t: 0 };
+    // The flight ends at the OVERWORLD state framed for the current viewport.
+    const aspect = this.camera.aspect;
+    const points = introPointsFor(aspect);
     return new Promise((resolve) => {
       this.resolveIntro = resolve;
       this.introTween = gsap.to(proxy, {
@@ -223,7 +231,7 @@ export class Experience {
         duration: INTRO_DURATION,
         ease: 'power1.inOut',
         onUpdate: () => {
-          this.cameraBase = { position: pointAt(proxy.t), target: targetAt(proxy.t) };
+          this.cameraBase = { position: pointAt(proxy.t, points), target: targetAt(proxy.t, aspect) };
         },
         onComplete: () => {
           this.introTween = null;
@@ -258,6 +266,11 @@ export class Experience {
   }
 
   // ----------------------------------------------------------------- scene
+
+  // Target island rotation (radians) from the carousel; eased every frame.
+  setIslandTurn(radians) {
+    this.islandTurn = radians;
+  }
 
   // Tints the sky for the inner bubble; `null` fades back to the plain sky.
   setAmbiance(hex) {
@@ -338,9 +351,11 @@ export class Experience {
     island.add(rock, grass, trunk, canopy);
     this.scene.add(island);
     this.island = island;
-    this.onTick(({ elapsed }) => {
+    this.onTick(({ elapsed, delta }) => {
       island.position.y = ISLAND_FOCUS[1] + Math.sin(elapsed * 0.6) * 0.08;
-      island.rotation.y = elapsed * 0.05;
+      // Slow idle spin plus the eased carousel turn: the bubbles seem to orbit the tree.
+      this.islandAngle = approachAngle(this.islandAngle, this.islandTurn, delta);
+      island.rotation.y = elapsed * 0.05 + this.islandAngle;
     });
   }
 
@@ -429,9 +444,10 @@ export class Experience {
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    // Re-frame a settled BUBBLE view when the viewport changes shape.
-    if (this.cameraStateName === 'BUBBLE' && !this.cameraTween?.isActive()) {
-      this.cameraBase = getCameraState('BUBBLE', this.camera.aspect);
+    // Re-frame a settled aspect-dependent view (BUBBLE, OVERWORLD) when the viewport changes shape.
+    const framed = this.cameraStateName === 'BUBBLE' || this.cameraStateName === 'OVERWORLD';
+    if (framed && !this.cameraTween?.isActive() && !this.introTween) {
+      this.cameraBase = getCameraState(this.cameraStateName, this.camera.aspect);
       this.applyCamera();
     }
     this.skyMaterial.uniforms.uResolution.value.set(width * ratio, height * ratio);

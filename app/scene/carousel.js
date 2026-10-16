@@ -32,7 +32,8 @@ const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
 /**
  * Spacing and bubble radius for a viewport aspect ratio, so ~4-5 bubbles fit on a
- * desktop screen and ~2-3 on a phone (camera: OVERWORLD, fov 45, 5 units away).
+ * desktop screen and ~2-3 on a phone (fov 45; `distance` = camera to bubble row, BubbleField
+ * passes overworldRowDistance(aspect); the spacing clamp can show a few more on wide screens).
  */
 export function layoutFor(aspect, { fov = 45, distance = 5 } = {}) {
   const halfWidth = distance * Math.tan(((fov / 2) * Math.PI) / 180) * aspect;

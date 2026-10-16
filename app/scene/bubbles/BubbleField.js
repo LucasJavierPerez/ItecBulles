@@ -9,13 +9,15 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { createCarousel, layoutFor } from '../carousel.js';
+import { BUBBLE_ROW, overworldRowDistance } from '../cameraStates.js';
+import { islandRotationFor } from '../islandTurn.js';
 import { SCENE_EVENTS } from '../events.js';
 import { IMAGE_FRAGMENT, IMAGE_VERTEX, SHELL_FRAGMENT, SHELL_VERTEX } from './shaders.js';
 import { BUBBLE_COLORS, paletteUniforms, srgbVector } from './colors.js';
 import { RippleTransition } from './RippleTransition.js';
 
-// Matches the OVERWORLD camera target height.
-const ROW_Y = 0.35;
+// Carousel spacing / radius for the OVERWORLD camera distance of this viewport.
+const layoutForViewport = (aspect) => layoutFor(aspect, { distance: overworldRowDistance(aspect) });
 const HOVER_SCALE = 1.08;
 const HIT_RIPPLE = { duration: 2.25, ease: 'power4.out' };
 
@@ -34,12 +36,13 @@ export class BubbleField {
     this.textures = [];
     this.disposed = false;
 
-    const { spacing, radius } = layoutFor(experience.camera.aspect);
+    const { spacing, radius } = layoutForViewport(experience.camera.aspect);
     this.radius = radius;
     this.carousel = createCarousel({ count: offers.length, spacing });
 
     this.group = new THREE.Group();
-    this.group.position.y = ROW_Y;
+    // In front of the island, above its tree (see BUBBLE_ROW in cameraStates.js).
+    this.group.position.set(...BUBBLE_ROW);
     experience.scene.add(this.group);
 
     this.shellGeometry = new THREE.SphereGeometry(1, 64, 48);
@@ -203,7 +206,7 @@ export class BubbleField {
   }
 
   onResize() {
-    const { spacing, radius } = layoutFor(this.experience.camera.aspect);
+    const { spacing, radius } = layoutForViewport(this.experience.camera.aspect);
     this.carousel.setSpacing(spacing);
     this.radius = radius;
   }
@@ -244,6 +247,8 @@ export class BubbleField {
   update({ elapsed, delta }) {
     const interactive = this.mode === 'overworld' && !this.transition.playing;
     this.carousel.update(delta);
+    // The island turns with the carousel so the row reads as orbiting the tree.
+    this.experience.setIslandTurn?.(islandRotationFor(this.carousel.offset / this.carousel.spacing, this.offers.length));
 
     if (interactive && this.pointerInside && !this.carousel.dragging) {
       const hit = this.pick();
