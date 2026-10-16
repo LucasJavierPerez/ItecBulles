@@ -1,0 +1,375 @@
+// Content model for the landing page.
+// Every fact below was taken from the official site (https://www.itecriocuarto.org.ar/)
+// on 2026-10-16. Each offer cites the page it came from in `source`.
+// Fields the official site does not state (duration, title, schedule...) are omitted
+// on purpose: never fill them with guesses.
+
+const SITE = 'https://www.itecriocuarto.org.ar';
+
+export const KINDS = [
+  'ingreso',
+  'carrera',
+  'tecnicatura',
+  'trayecto',
+  'secundario',
+  'capacitacion',
+  'labs',
+  'empleo',
+];
+
+/** Human-readable label for each kind (Spanish UI copy). */
+export const KIND_LABELS = {
+  ingreso: 'Inscripción',
+  carrera: 'Carrera de nivel superior',
+  tecnicatura: 'Tecnicatura de nivel superior',
+  trayecto: 'Trayecto formativo',
+  secundario: 'Nivel secundario',
+  capacitacion: 'Capacitación continua',
+  labs: 'Programa educativo',
+  empleo: 'Portal de trabajo',
+};
+
+export const links = {
+  cta: {
+    label: 'Quiero + Info',
+    url: 'https://docs.google.com/forms/d/e/1FAIpQLScjhSUcMVsUobJ4uUEUr3kAA7-VBLYUTbhhV01EtWf8Lcz3xw/viewform',
+  },
+  adaByronAdmission: 'https://forms.gle/x2TwoqM415tbsTdt8',
+  pccCursos: 'https://cursos.itecriocuarto.org.ar',
+  sitec: 'https://sitec.itecriocuarto.org.ar',
+  schedules: `${SITE}/alumnos/horarios-de-cursado`,
+  calendar: `${SITE}/alumnos/calendario`,
+  officialSite: `${SITE}/inicio`,
+  healthCertificateTemplate:
+    'https://drive.google.com/file/d/1h6mXHwVZ-nfQlVyFy2waOhRcftfEsguS/view?usp=sharing',
+  transcriptTemplate:
+    'https://drive.google.com/file/d/0Bzj-DEUAlG8IQUNaSkR3WC03cDA/view?resourcekey=0-FCsjFbl0KUXJZcz2rKSy3g',
+};
+
+export const institution = {
+  name: 'iTec Río Cuarto',
+  fullName: 'Instituto Tecnológico Río Cuarto',
+  motto: 'Educación para transformar',
+  about: [
+    'Somos una Institución de Educación Técnica Superior con más de treinta años de trayectoria.',
+    'El Instituto Tecnológico Río Cuarto procura que los estudiantes adquieran competencias laborales y sociales.',
+    'Nuestro principal objetivo es lograr que los futuros profesionales se inserten en el mercado laboral como individuos autónomos, innovadores y creativos.',
+  ],
+  degree:
+    'El iTec está adscripto al sistema oficial: el título es terciario de nivel superior, oficial y de validez nacional.',
+  source: `${SITE}/inicio`,
+};
+
+export const campuses = [
+  {
+    name: 'Sede Centro',
+    address: 'Constitución 716, Barrio Centro, Río Cuarto',
+    hours: ['Mañana de 8:00 a 12:30 hs', 'Tarde de 17:00 a 21:00 hs'],
+  },
+  {
+    name: 'Sede Campus',
+    address: 'Wenceslao Tejerina Norte 783, Barrio Villa Dalcar, Río Cuarto',
+    hours: ['Lunes a jueves, de 19:00 a 22:00 hs'],
+  },
+];
+
+export const contacts = {
+  phone: { display: '0358-4643036', href: 'tel:+543584643036' },
+  email: { address: 'informes@itecriocuarto.org.ar', href: 'mailto:informes@itecriocuarto.org.ar' },
+  whatsapp: [
+    { label: 'Informes de carreras', display: '358 560-6036', url: 'https://wa.me/5493585606036' },
+    { label: 'Informes de cursos', display: '358 560-6052', url: 'https://wa.me/5493585606052' },
+  ],
+  socials: [
+    { label: 'Facebook', url: 'https://www.facebook.com/iTecRioCuarto' },
+    { label: 'Instagram', url: 'https://www.instagram.com/itecriocuarto/' },
+    { label: 'TikTok', url: 'https://www.tiktok.com/@itecriocuarto' },
+  ],
+};
+
+// Admission requirements shared by every higher-level career (/alumnos/ingresantes
+// and each career page list the same six items).
+const HIGHER_ED_REQUIREMENTS = [
+  'Fotocopia del DNI',
+  '3 fotos 4x4',
+  'Constancia de CUIL',
+  'Partida de nacimiento legalizada',
+  'Certificado de salud psicofísica',
+  'Fotocopia autenticada del certificado analítico del secundario, o certificado de estudio en trámite',
+];
+
+const requirementsDetail = { label: 'Requisitos de inscripción', value: HIGHER_ED_REQUIREMENTS };
+
+export const offers = [
+  {
+    id: 'ingreso-2027',
+    kind: 'ingreso',
+    title: 'Ingreso 2027',
+    summary:
+      'Las inscripciones a las carreras están abiertas. Dejanos tus datos y el equipo se comunica para responder tus dudas.',
+    details: [
+      {
+        label: 'Cursillo de ingreso',
+        value: [
+          'En febrero, presencial, en el horario de cursada (desde las 19:30 hs).',
+          'No es eliminatorio, pero es obligatorio.',
+          'Incluye contenidos de la carrera y la adaptación a la vida institucional.',
+        ],
+      },
+      {
+        label: 'Cursada',
+        value: 'Presencial, de lunes a viernes de 19:30 a 23:30 hs, en el Campus (Wenceslao Tejerina Norte 783).',
+      },
+      { label: 'Título', value: 'Terciario de nivel superior, oficial y de validez nacional.' },
+      {
+        label: '¿Te quedan materias del secundario?',
+        value:
+          'Podés inscribirte como alumno condicional y regularizar hasta julio del año de ingreso.',
+      },
+      {
+        label: 'Mayores de 25 sin secundario terminado',
+        value:
+          'Con el CBU aprobado (1°, 2° y 3° año) podés inscribirte; el coordinador te indica los prácticos para cumplir la condicionalidad, con acompañamiento pedagógico.',
+      },
+      requirementsDetail,
+    ],
+    source: `${SITE}/alumnos/ingresantes`,
+  },
+  {
+    id: 'desarrollo-de-software',
+    kind: 'carrera',
+    title: 'Desarrollo de Software',
+    summary:
+      'Producís software de punta a punta: diseño, construcción, depuración, optimización y mantenimiento, y apps multiplataforma para escritorio, celulares y la web.',
+    details: [
+      {
+        label: 'Perfil profesional',
+        value: [
+          'Producir software (programas, módulos, objetos): diseño, construcción, depuración, optimización y mantenimiento.',
+          'Crear apps multiplataforma para escritorio, tablets, smartphones y la web.',
+          'Brindar soporte y mantenimiento de hardware, software y redes.',
+          'Planificar y dirigir proyectos informáticos.',
+        ],
+      },
+      {
+        label: 'Tecnologías',
+        value: 'Python, JavaScript, PHP, HTML5, CSS3, React, Vue, NodeJS, Django, Laravel, Git, SQL Server, MySQL, Linux y Android, entre otras.',
+      },
+      { label: 'Modalidad', value: 'Presencial o Campus Virtual (contenido asincrónico 24 hs y clases sincrónicas en vivo).' },
+      requirementsDetail,
+    ],
+    source: `${SITE}/carreras/software`,
+  },
+  {
+    id: 'inteligencia-artificial',
+    kind: 'carrera',
+    title: 'Inteligencia Artificial',
+    summary:
+      'Analizás grandes cantidades de datos para extraer información valiosa, construís modelos predictivos y comunicás resultados.',
+    details: [
+      { label: 'Modalidad', value: 'Presencial - Combinado.' },
+      {
+        label: 'Qué vas a hacer',
+        value: [
+          'Recolectar y preparar datos de distintas fuentes.',
+          'Analizar datos con técnicas estadísticas y de IA.',
+          'Construir modelos predictivos.',
+          'Comunicar resultados con visualizaciones e informes.',
+          'Colaborar con equipos de negocio y tecnología.',
+        ],
+      },
+      {
+        label: 'Dónde trabajar',
+        value: 'Startups (fintech, healthtech, e-commerce), consultoras tecnológicas y empresas de software.',
+      },
+      requirementsDetail,
+    ],
+    source: `${SITE}/carreras/inteligencia-artificial`,
+  },
+  {
+    id: 'mecatronica',
+    kind: 'carrera',
+    title: 'Mecatrónica',
+    summary:
+      'Integrás mecánica, informática y electrónica para diseñar, supervisar y reparar sistemas en maquinarias y procesos industriales.',
+    details: [
+      { label: 'Título', value: 'Técnico en Mecatrónica.' },
+      {
+        label: 'Modalidad',
+        value: 'Método combinado: clases virtuales en vivo, cursado presencial en el campus y prácticas profesionalizantes desde el primer año.',
+      },
+      {
+        label: 'Perfil profesional',
+        value: [
+          'Proyectar dispositivos, equipos y sistemas automatizados.',
+          'Diseñar, instalar y mantener procesos de control de máquinas o líneas de producción.',
+          'Diseñar, programar y operar sistemas automáticos para plantas industriales.',
+        ],
+      },
+      {
+        label: 'Campo laboral',
+        value: [
+          'Industrias y empresas de servicios (mecánica, electrónica, automatización, calidad, alimentación).',
+          'Organismos gubernamentales y ONG de desarrollo.',
+          'Emprendimientos propios de proyectos industriales.',
+        ],
+      },
+      requirementsDetail,
+    ],
+    source: `${SITE}/carreras/mecatronica`,
+  },
+  {
+    id: 'marketing-digital',
+    kind: 'carrera',
+    title: 'Marketing Digital',
+    summary:
+      'Analizás tendencias de consumo, planificás marketing en medios no tradicionales y posicionás marcas en redes sociales y e-commerce.',
+    details: [
+      { label: 'Carrera', value: 'Tecnicatura Superior en Marketing Digital.' },
+      {
+        label: 'Modalidad',
+        value: 'Método combinado: clases virtuales en vivo, cursado presencial en el campus y prácticas profesionalizantes.',
+      },
+      {
+        label: 'Perfil profesional',
+        value: [
+          'Analizar tendencias de consumo y organizar planes de marketing en medios no tradicionales.',
+          'Identificar productos o servicios para e-commerce y crear estrategias de posicionamiento de marca en redes.',
+          'Gestionar tu área de trabajo, en relación de dependencia o en emprendimientos propios.',
+        ],
+      },
+      requirementsDetail,
+    ],
+    source: `${SITE}/carreras/marketing-digital`,
+  },
+  {
+    id: 'turismo-y-hoteleria',
+    kind: 'carrera',
+    title: 'Turismo y Hotelería',
+    summary:
+      'La actividad turística ofrece muchas posibilidades laborales, con distintos niveles de responsabilidad en gestión y planificación.',
+    details: [
+      {
+        label: 'Modalidad',
+        value: 'Método combinado: clases virtuales en vivo, cursado presencial en el campus y prácticas profesionalizantes desde el primer año.',
+      },
+      {
+        label: 'Campo laboral',
+        value: [
+          'Empresas de alojamiento',
+          'Empresas de gastronomía',
+          'Servicios de entretenimiento, descanso y cultura',
+          'Empresas de intermediación',
+          'Transporte y logística',
+        ],
+      },
+      requirementsDetail,
+    ],
+    source: `${SITE}/carreras/turismo`,
+  },
+  {
+    id: 'operario-electromecanico',
+    kind: 'trayecto',
+    title: 'Operario de Mantenimiento Electromecánico',
+    summary:
+      'Trayecto formativo para jóvenes y adultos que buscan un oficio técnico, y para trabajadores que quieren mejorar sus competencias.',
+    details: [
+      { label: 'Duración', value: '10 meses (280 horas).' },
+      { label: 'Inicio', value: 'Septiembre de 2026.' },
+      { label: 'Cursada', value: 'Lunes y jueves de 20 a 23:30 hs.' },
+      { label: 'Modalidad', value: 'Presencial con orientación práctica, en el Campus iTec.' },
+      {
+        label: 'Contenidos',
+        value:
+          'Electricidad básica, instalaciones domiciliarias e industriales, mecánica general, motores eléctricos, automatización básica, neumática y proyecto integrador.',
+      },
+      { label: 'Al egresar', value: 'Podés interpretar planos eléctricos y mecánicos.' },
+    ],
+    source: `${SITE}/trayectos/Operario_electromecanico`,
+  },
+  {
+    id: 'secundario-ada-byron',
+    kind: 'secundario',
+    title: 'Secundario Ada Byron',
+    summary:
+      'Una propuesta educativa integral con orientación en Programación y Robótica, complementada con artes, literatura y ciencias humanas.',
+    details: [
+      { label: 'Orientación', value: 'Programación y Robótica, con una mirada crítica, reflexiva y ética sobre la tecnología.' },
+      { label: 'Años disponibles', value: '1º, 2º y 3º año. En el ciclo lectivo 2027 abre 4º año.' },
+      {
+        label: 'Admisión',
+        value: [
+          'Completá el formulario de preinscripción y subí la documentación.',
+          'La escuela revisa la documentación y las vacantes, y coordina una entrevista con el estudiante y ambos responsables.',
+          'Si hay vacante, se indica la documentación a presentar y un plazo.',
+          'Administración agenda la firma del contrato y el pago de la matrícula.',
+        ],
+      },
+      {
+        label: 'Documentación',
+        value: [
+          'Fotocopia del DNI',
+          'Partida de nacimiento',
+          'Certificado de vacunas al día',
+          'Ficha de inscripción firmada por ambos responsables',
+          'Libre deuda de la escuela anterior',
+        ],
+      },
+      { label: 'Sin vacante', value: 'Quienes completan el proceso pueden quedar en lista de espera.' },
+    ],
+    extraLinks: [{ label: 'Formulario de admisión Ada Byron', url: links.adaByronAdmission }],
+    source: `${SITE}/adabyron`,
+  },
+  {
+    id: 'capacitacion-continua',
+    kind: 'capacitacion',
+    title: 'Capacitación Continua',
+    summary:
+      'Cursos para adquirir nuevas habilidades en un área específica y desarrollarlas de manera práctica y teórica.',
+    details: [
+      {
+        label: 'Algunos cursos 2026',
+        value: [
+          'Modelado 3D de Interiores con SketchUP',
+          'AutoCAD para Planos Eléctricos',
+          'Introducción al uso de la Inteligencia Artificial',
+        ],
+      },
+    ],
+    extraLinks: [{ label: 'Ver cursos en PCC Cursos', url: links.pccCursos }],
+    source: links.pccCursos,
+  },
+  {
+    id: 'itec-labs',
+    kind: 'labs',
+    title: 'iTec Labs',
+    summary:
+      'Programa educativo donde estudiantes avanzados de Desarrollo de Software diseñan sistemas para empresas y organizaciones reales.',
+    details: [
+      { label: 'Desde', value: '2019, dentro de la Tecnicatura Superior en Desarrollo de Software.' },
+      {
+        label: 'Cómo se trabaja',
+        value: 'Con Scrum, en equipos de 3 a 6 estudiantes desarrolladores autoorganizados, acompañados por docentes responsables.',
+      },
+      {
+        label: 'Algunos clientes',
+        value: 'Mellitus Salud, Sindicato de la Carne, TecnoRed Energía, Oficio Constructora, Grupo Terra y Cermed SRL, entre otros.',
+      },
+    ],
+    source: `${SITE}/itec-labs`,
+  },
+  {
+    id: 'portal-de-trabajo',
+    kind: 'empleo',
+    title: 'Portal de Trabajo',
+    summary:
+      'Conecta a alumnos y exalumnos de las carreras del iTec y del PCC con empresas e instituciones que ofrecen puestos.',
+    details: [
+      {
+        label: 'Cómo participar',
+        value: 'Completás tu perfil profesional y tus preferencias laborales, y podés postularte a ofertas publicadas. El iTec te contacta cuando hay ofertas que coinciden con tu perfil.',
+      },
+    ],
+    source: `${SITE}/bolsadetrabajo`,
+  },
+];
