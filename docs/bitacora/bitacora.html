@@ -163,7 +163,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
 </header>
 
 <nav class="toc" aria-label="Secciones">
-  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#e005">Entrada 005</a><a href="#e006">Entrada 006</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
+  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#e005">Entrada 005</a><a href="#e006">Entrada 006</a><a href="#e007">Entrada 007</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
   <a href="#hallazgos">Hallazgos iTec</a><a href="#referencia">Qué tomar de Bulles</a><a href="#concepto">Concepto</a>
   <a href="#plan">Plan</a><a href="#decisiones">Decisiones</a>
 </nav>
@@ -215,6 +215,17 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <li><span class="sev m">T7</span><p>La prueba en navegador encontró 5 problemas de diseño<small>El panel de información tapaba el botón en celular, el texto quedaba encima de la burbuja, las tarjetas eran angostas, el tutorial tapaba el botón principal y la pantalla de carga se trababa en pestañas ocultas. Se corrigieron y la segunda pasada salió limpia.</small></p></li>
     <li><span class="sev l">Cómo</span><p>Chrome sin ventana con WebGL por software<small>La pestaña automatizada de Chrome queda oculta y no anima; con playwright se probaron escritorio, celular y movimiento reducido.</small></p></li>
     <li><span class="sev m">Falta</span><p>Sonido audible, arrastre con una placa de video real y lectores de pantalla<small>También queda pulir el estilo de las ilustraciones.</small></p></li>
+  </ul>
+</section>
+
+<section id="e007">
+  <p class="eyebrow">Entrada 007</p>
+  <h2>Fotos reales y el árbol al centro</h2>
+  <div class="prompt">las imagenes de las burbujas no se entienden, tal vez las imagenes reales son mejores, cuando paso del arbol a la burbuja baja, y el arbol no lo veo mas... me gustaria que las burbujas queden mas arriba, asi cuando las recorro, el arbol gire al medio</div>
+  <ul class="findings col">
+    <li><span class="sev l">T9</span><p>Las burbujas muestran las fotos reales del sitio<small>Las ilustraciones no se entendían. Ahora son recortes de las fotos oficiales sin texto, con el contraste recuperado.</small></p></li>
+    <li><span class="sev l">T10</span><p>El árbol queda en el centro y gira al recorrer las burbujas<small>Las burbujas pasaron arriba, en una fila delante de la isla, y la isla da una vuelta por cada vuelta del carrusel.</small></p></li>
+    <li><span class="sev m">A mirar</span><p>En los bordes las burbujas se superponen de a dos<small>Es por la curva que tienen en los extremos.</small></p></li>
   </ul>
 </section>
 
@@ -373,11 +384,11 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="dec"><code>D-05</code><span>Lo que usan los alumnos actuales (horarios, calendario, SiTec) pasa al pie del sitio como enlaces secundarios.</span><span class="st prop">propuesta</span></div>
     <div class="dec"><code>D-06</code><span>Botón principal "Quiero + Info" (formulario actual); WhatsApp como contacto secundario.</span><span class="st prop">supuesto</span></div>
     <div class="dec"><code>D-07</code><span>Diseño, tecnología y experiencia de Bulles son la referencia central: Nuxt, three.js, GSAP y Howler.</span><span class="st firm">firme</span></div>
-    <div class="dec"><code>D-08</code><span>Dentro de cada burbuja va una ilustración hecha a partir de las fotos actuales del sitio.</span><span class="st firm">firme</span></div>
+    <div class="dec"><code>D-08</code><span>Dentro de cada burbuja va la foto real del sitio oficial (antes: ilustración hecha sobre la foto; cambiado en la entrada 007).</span><span class="st firm">firme</span></div>
   </div>
   <div class="next">
     <h3>Próximo paso</h3>
-    <p>Pulir el estilo de las ilustraciones, confirmar D-02, D-03, D-05 y D-06, y abrir el PR a main.</p>
+    <p>Revisar cómo se siente el giro del árbol, confirmar D-02, D-03, D-05 y D-06, y abrir el PR a main.</p>
   </div>
 </section>
 
