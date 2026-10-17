@@ -10,16 +10,24 @@ export const ISLAND_FOCUS = [0, 3, -1];
 // screen with the island and tree centered below and behind them.
 export const BUBBLE_ROW = Object.freeze([0, 5.6, 2.5]);
 
+// The overworld title pill hangs this many bubble radii below the focused bubble's
+// center (BubbleField.getLabel); the OVERWORLD framing keeps it clear of the roof.
+export const BUBBLE_LABEL_OFFSET = 1.25;
+
 // How far BUBBLE sits in front of the opened bubble.
 const BUBBLE_DISTANCE = 3.2;
 
 export const CAMERA_STATES = Object.freeze({
-  INTRO_HOME: { position: [0, 3.5, 5.5], target: [...ISLAND_FOCUS] },
-  HOME: { position: [0, 3.5, 4], target: [...ISLAND_FOCUS] },
+  // Home (wide screens): the camera looks at the sky above the island, so the iTec
+  // building sits low in the frame, under the hero copy and above the practical-info
+  // drawer; the text keeps calm sky behind it. INTRO_HOME starts a bit further back
+  // with the building lower and eases up into HOME.
+  INTRO_HOME: { position: [0, 4, 12], target: [0, 6.4, ISLAND_FOCUS[2]] },
+  HOME: { position: [0, 4, 11], target: [0, 6.1, ISLAND_FOCUS[2]] },
   SKY: { position: [0, 15, 15], target: [0, 0, 0] },
-  // Wide screens: high and far enough to keep the whole island in view, looking down
-  // slightly past the bubble row at the island.
-  OVERWORLD: { position: [0, 5, 10], target: [0, 4.5, ISLAND_FOCUS[2]] },
+  // Wide screens: far enough to keep the whole island in view and a bit below the
+  // bubble row, so the focused bubble's title pill clears the building roof.
+  OVERWORLD: { position: [0, 4.4, 10], target: [0, 4.6, ISLAND_FOCUS[2]] },
   // The camera leans into the bubble that was opened (framed per viewport below).
   BUBBLE: {
     position: [BUBBLE_ROW[0], BUBBLE_ROW[1], BUBBLE_ROW[2] + BUBBLE_DISTANCE],
@@ -27,8 +35,20 @@ export const CAMERA_STATES = Object.freeze({
   },
 });
 
-// Portrait screens are narrow: pull back so the island still fits across.
-const OVERWORLD_PORTRAIT = Object.freeze({ position: [0, 5.5, 12], target: [0, 4.75, ISLAND_FOCUS[2]] });
+// Portrait screens are narrow: pull back so the island still fits across, and sit
+// lower than the row so the title pill stays above the roof.
+const OVERWORLD_PORTRAIT = Object.freeze({ position: [0, 4.3, 12], target: [0, 5.15, ISLAND_FOCUS[2]] });
+
+// Portrait home: the hero copy wraps into a taller block, so the building goes lower.
+const HOME_PORTRAIT = Object.freeze({ position: [0, 4.3, 11], target: [0, 7, ISLAND_FOCUS[2]] });
+const INTRO_HOME_PORTRAIT = Object.freeze({ position: [0, 4.3, 12], target: [0, 7.3, ISLAND_FOCUS[2]] });
+
+// States that have their own framing on portrait screens (aspect < 1).
+const PORTRAIT_STATES = Object.freeze({
+  OVERWORLD: OVERWORLD_PORTRAIT,
+  HOME: HOME_PORTRAIT,
+  INTRO_HOME: INTRO_HOME_PORTRAIT,
+});
 
 const STEP_PLANS = {
   home: { mode: 'tween', state: 'HOME' },
@@ -63,13 +83,14 @@ function framedBubbleState(aspect) {
 const copyState = ({ position, target }) => ({ position: [...position], target: [...target] });
 
 // Without an aspect every state is the plain table entry; with one, BUBBLE is
-// framed for that viewport and OVERWORLD pulls back on portrait screens.
+// framed for that viewport and OVERWORLD / HOME / INTRO_HOME switch to their
+// portrait framing on portrait screens.
 export function getCameraState(name, aspect) {
   const state = CAMERA_STATES[name];
   if (!state) throw new Error(`Unknown camera state: ${name}`);
   const hasAspect = Number.isFinite(aspect) && aspect > 0;
   if (name === 'BUBBLE' && hasAspect) return framedBubbleState(aspect);
-  if (name === 'OVERWORLD' && hasAspect && aspect < 1) return copyState(OVERWORLD_PORTRAIT);
+  if (hasAspect && aspect < 1 && PORTRAIT_STATES[name]) return copyState(PORTRAIT_STATES[name]);
   return copyState(state);
 }
 

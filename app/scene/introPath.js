@@ -15,10 +15,14 @@ export const INTRO_POINTS = Object.freeze([
   CAMERA_STATES.OVERWORLD.position,
 ]);
 
-// Same flight, ending at the OVERWORLD state framed for this viewport aspect
-// (portrait screens settle further back), so the intro never jumps at the end.
+// Same flight, starting at the HOME state and ending at the OVERWORLD state framed
+// for this viewport aspect, so the intro never jumps at either end.
 export function introPointsFor(aspect) {
-  return [...INTRO_POINTS.slice(0, -1), getCameraState('OVERWORLD', aspect).position];
+  return [
+    getCameraState('HOME', aspect).position,
+    ...INTRO_POINTS.slice(1, -1),
+    getCameraState('OVERWORLD', aspect).position,
+  ];
 }
 
 const clamp01 = (t) => Math.min(1, Math.max(0, t));
@@ -53,10 +57,17 @@ const smoothstep = (edge0, edge1, x) => {
   return k * k * (3 - 2 * k);
 };
 
-// Look at the island for most of the flight, then settle on the OVERWORLD target
-// (framed for `aspect` when given).
+// Start on the HOME target (sky above the island), turn to the island early, look at
+// it for most of the flight, then settle on the OVERWORLD target (both framed for
+// `aspect` when given).
 export function targetAt(t, aspect) {
-  const blend = smoothstep(0.55, 1, clamp01(t));
+  const u = clamp01(t);
+  const start = getCameraState('HOME', aspect).target;
+  const toIsland = smoothstep(0, 0.3, u);
+  const toEnd = smoothstep(0.55, 1, u);
   const end = getCameraState('OVERWORLD', aspect).target;
-  return ISLAND_FOCUS.map((v, i) => v + (end[i] - v) * blend);
+  return ISLAND_FOCUS.map((v, i) => {
+    const look = start[i] + (v - start[i]) * toIsland;
+    return look + (end[i] - look) * toEnd;
+  });
 }

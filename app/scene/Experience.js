@@ -328,9 +328,11 @@ export class Experience {
     this.island = island;
     this.onTick(({ elapsed, delta }) => {
       island.position.y = ISLAND_FOCUS[1] + Math.sin(elapsed * 0.6) * 0.08;
-      // Slow idle spin plus the eased carousel turn: the bubbles seem to orbit the centerpiece.
+      // Slow idle spin (unless the centerpiece opts out) plus the eased carousel turn:
+      // the bubbles seem to orbit the centerpiece.
       this.islandAngle = approachAngle(this.islandAngle, this.islandTurn, delta);
-      island.rotation.y = elapsed * 0.05 + this.islandAngle;
+      const idle = this.centerpiece.idleSpin === false ? 0 : elapsed * 0.05;
+      island.rotation.y = idle + this.islandAngle;
       if (this.animateCenterpiece) this.centerpiece.update(elapsed, delta);
     });
   }

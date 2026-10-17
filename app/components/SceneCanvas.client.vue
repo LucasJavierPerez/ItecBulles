@@ -26,8 +26,8 @@ let offLabelTick = null;
 let loader = null;
 let webgl = false;
 
-// ui step -> BubbleField mode.
-const bubbleModeFor = (step) => (step === 'overworld' || step === 'bubble' ? step : 'idle');
+// ui step -> BubbleField mode ('home' hides the bubbles behind the hero copy).
+const bubbleModeFor = (step) => (['home', 'overworld', 'bubble'].includes(step) ? step : 'idle');
 
 // Positions the title pill under the hovered / focused bubble. Writes the DOM
 // directly each frame; only the text goes through Vue, and only when it changes.
@@ -83,8 +83,8 @@ async function mountScene() {
       import('~/scene/bubbles/BubbleField.js'),
     ]);
     if (!enabled.value || !canvas.value) return;
-    // `?centro=arbol|edificio|circuitos|isotipo` swaps the island's centerpiece
-    // (prototypes; resolved inside the lazy scene chunk, unknown values -> tree).
+    // `?centro=arbol|circuitos|isotipo` swaps in a prototype centerpiece (resolved
+    // inside the lazy scene chunk; no or unknown value -> the iTec building).
     experience = new Experience(canvas.value, {
       centerpiece: new URLSearchParams(window.location.search).get('centro'),
       animate: !ui.reducedMotion,

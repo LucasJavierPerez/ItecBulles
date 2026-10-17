@@ -22,6 +22,7 @@ The current Google Sites page scatters information, has three enrollment paths, 
 - D-05 current-student links (horarios, calendario, SiTec) in footer only.
 - Content only from the official site; no invented dates, durations or numbers.
 - D-08 (user, 2026-10-16): each bubble shows an illustration derived from the current official-site photos. No image-generation model is available, so illustrations are produced by a reproducible build script (sharp) that stylizes the downloaded photos (posterize to the Bulles palette + ink outlines + paper grain). Originals and sources are recorded per offer.
+- D-09 (user, 2026-10-16: "el que mejor quedó es el edificio del itec"): the iTec building is the island centerpiece by default; the other prototypes stay reachable with `?centro=`.
 - UI copy in Spanish (target audience); code, identifiers and comments in English.
 
 ## Stack (re-planned 2026-10-16 after Bulles teardown)
@@ -40,6 +41,8 @@ Mirror the reference: Nuxt + Vue 3 + Pinia + three.js (plain) + GSAP + Howler.js
 - [x] T10 Overworld composition (user feedback: going from the tree to the bubbles the camera drops and the tree disappears): keep the island and tree visible in the overworld, raise the bubble row so it sits higher on screen, and rotate the island/tree around its vertical axis in sync with carousel scrolling so it turns in the middle while browsing. Route: delegated.: build, tests, visible-window browser check desktop/mobile, bitácora entry. Route: inline (parent).
 - [x] T11 Volume control (user request 2026-10-16: "se podria poner para que se pueda bajar el volumen del sonido?"): master volume 0–1 (default 0.7) applied via `Howler.volume()`, persisted under `itec-bulles:volume`, `volume` / `setVolume` in the ui store (0 shows as muted, raising from 0 unmutes), compact "Volumen" slider popover next to the "Sonido" pill, tests first, README Sound section. Route: delegated (writer; 4+ non-trivial files).
 - [x] T12 Centerpiece prototypes (prototypes delivered; final choice pending user) (user request 2026-10-16: "me gustaria que me hagas 3 prototipos para cambiar el arbol del medio... estoy pensando como una opcion el edificio del itec"): three switchable replacements for the central tree — extract the tree to `app/scene/centerpieces/tree.js`, add `building.js` (Edificio iTec, from `assets/photos/ingreso-2027.jpg`), `circuitTree.js` (Árbol de circuitos), `isotype.js` (La i de iTec); select with `?centro=arbol|edificio|circuitos|isotipo` (default/invalid → `arbol`); selection logic tested first, smoke tests per centerpiece, screenshots per value. Route: delegated (writer; 5+ non-trivial files).
+
+- [ ] T13 iTec building as the centerpiece (user decision D-09, 2026-10-16): default centerpiece `edificio` (`?centro=arbol|circuitos|isotipo` still switch), re-frame HOME/INTRO_HOME per aspect so the building sits below the hero text (calm sky behind the copy, WCAG AA), intro path starts at the framed HOME, keep the focused bubble's title pill clear of the roof in OVERWORLD at 1440×900 and 390×844, facade faces the camera at rest. Tests first (projected framing). Route: delegated (writer; 4+ non-trivial files).
 
 ## Acceptance criteria
 - `npm test` and `npm run build` pass.

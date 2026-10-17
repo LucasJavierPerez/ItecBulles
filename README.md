@@ -30,19 +30,22 @@ server rendering adds nothing. `nuxt generate` still produces a static site that
 - `app/assets/css/main.css` — Tailwind v4 tokens (`@theme`): Bulles palette, sky gradient, easings, `btn-pill`.
 - `tests/` — Vitest specs.
 
-## Island centerpiece (prototypes)
+## Island centerpiece
 
-The object in the middle of the floating island can be swapped with the URL query
-`?centro=`; it turns with the island while browsing the bubbles.
+The middle of the floating island shows the iTec building by default (user decision
+D-09). The earlier prototypes can still be swapped in with the URL query `?centro=`;
+the centerpiece turns with the island while browsing the bubbles.
 
 | Value | Centerpiece |
 |-------|-------------|
-| `arbol` (default) | The original pink low-poly tree. |
-| `edificio` | "Edificio iTec": the real building front (stone facade, green metal band, window ribbon, sign, "iTec" letters, glass door, "783"), from `assets/photos/ingreso-2027.jpg`. |
+| `edificio` (default) | "Edificio iTec": the real building front (stone facade, green metal band, window ribbon, sign, "iTec" letters, glass door, "783"), from `assets/photos/ingreso-2027.jpg`. It does not idle-spin, so at rest the facade faces the camera. |
+| `arbol` | The original pink low-poly tree. |
 | `circuitos` | "Árbol de circuitos": a tree of right-angle circuit traces on a chip, ending in pulsing glowing nodes. |
 | `isotipo` | "La i de iTec": the logo's "i" with a red dot and five career icons orbiting it. |
 
-Unknown values fall back to `arbol`. Code: `app/scene/centerpieces/` (one module per
+Unknown values fall back to `edificio`. On the home screen the camera frames the
+building low, under the hero copy (per-aspect `HOME` / `INTRO_HOME` in
+`app/scene/cameraStates.js`). Code: `app/scene/centerpieces/` (one module per
 centerpiece, each `create()` → `{ object3D, update(elapsed, delta), dispose() }`).
 
 ## Bubble images

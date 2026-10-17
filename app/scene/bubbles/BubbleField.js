@@ -3,13 +3,14 @@
 // translucent noise-wobble shell with an iridescent fresnel rim.
 //
 // Modes (set from the ui step):
-//   'idle'      home / intro: bubbles float, no input
+//   'home'      home screen: bubbles fade out, so the hero copy keeps calm sky
+//   'idle'      intro: bubbles float, no input
 //   'overworld' carousel input, hover ripple, click opens a bubble
 //   'bubble'    detail view: the opened bubble stays, the others fade away
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { createCarousel, layoutFor } from '../carousel.js';
-import { BUBBLE_ROW, overworldRowDistance } from '../cameraStates.js';
+import { BUBBLE_ROW, BUBBLE_LABEL_OFFSET, overworldRowDistance } from '../cameraStates.js';
 import { islandRotationFor } from '../islandTurn.js';
 import { SCENE_EVENTS } from '../events.js';
 import { IMAGE_FRAGMENT, IMAGE_VERTEX, SHELL_FRAGMENT, SHELL_VERTEX } from './shaders.js';
@@ -262,12 +263,13 @@ export class BubbleField {
       const t = this.carousel.itemTransform(i);
       bubble.root.position.set(t.x, Math.sin(elapsed * 0.9 + bubble.phase) * 0.05, t.z);
       bubble.root.rotation.y = t.rotationY;
-      bubble.root.visible = Math.abs(t.x) < 7;
+      bubble.root.visible = Math.abs(t.x) < 7 && (this.mode !== 'home' || bubble.opacity > 0.01);
 
       const scale = this.radius * (i === this.hovered ? HOVER_SCALE : 1);
       bubble.root.scale.setScalar(THREE.MathUtils.lerp(bubble.root.scale.x, scale, ease));
 
-      const hidden = this.mode === 'bubble' && this.openedIndex >= 0 && i !== this.openedIndex;
+      const hidden =
+        this.mode === 'home' || (this.mode === 'bubble' && this.openedIndex >= 0 && i !== this.openedIndex);
       bubble.opacity = THREE.MathUtils.lerp(bubble.opacity, hidden ? 0 : 1, ease);
       bubble.shellMaterial.uniforms.uTime.value = elapsed;
       bubble.shellMaterial.uniforms.uOpacity.value = bubble.opacity;
@@ -287,7 +289,7 @@ export class BubbleField {
     if (index < 0) return null;
     const { root } = this.bubbles[index];
     const anchor = root.getWorldPosition(new THREE.Vector3());
-    anchor.y -= root.scale.x * 1.25;
+    anchor.y -= root.scale.x * BUBBLE_LABEL_OFFSET;
     anchor.project(this.experience.camera);
     return {
       id: this.offers[index].id,

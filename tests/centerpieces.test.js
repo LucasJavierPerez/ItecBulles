@@ -16,11 +16,11 @@ describe('centerpiece selection', () => {
     }
   });
 
-  it('defaults to the tree', () => {
-    expect(DEFAULT_CENTERPIECE).toBe('arbol');
-    expect(resolveCenterpiece().id).toBe('arbol');
-    expect(resolveCenterpiece(null).id).toBe('arbol');
-    expect(resolveCenterpiece('').id).toBe('arbol');
+  it('defaults to the iTec building (user decision D-09)', () => {
+    expect(DEFAULT_CENTERPIECE).toBe('edificio');
+    expect(resolveCenterpiece().id).toBe('edificio');
+    expect(resolveCenterpiece(null).id).toBe('edificio');
+    expect(resolveCenterpiece('').id).toBe('edificio');
   });
 
   it('resolves every known value', () => {
@@ -35,10 +35,10 @@ describe('centerpiece selection', () => {
     expect(resolveCenterpiece('ÁRBOL').id).toBe('arbol');
   });
 
-  it('falls back to the tree for unknown or malformed values', () => {
-    expect(resolveCenterpiece('castillo').id).toBe('arbol');
-    expect(resolveCenterpiece(42).id).toBe('arbol');
-    expect(resolveCenterpiece({}).id).toBe('arbol');
+  it('falls back to the building for unknown or malformed values', () => {
+    expect(resolveCenterpiece('castillo').id).toBe('edificio');
+    expect(resolveCenterpiece(42).id).toBe('edificio');
+    expect(resolveCenterpiece({}).id).toBe('edificio');
   });
 
   it('takes the first value of a repeated query parameter', () => {
@@ -46,11 +46,21 @@ describe('centerpiece selection', () => {
   });
 
   it('reads ?centro= from a location search string', () => {
-    expect(centerpieceFromSearch('?centro=edificio').id).toBe('edificio');
+    expect(centerpieceFromSearch('?centro=arbol').id).toBe('arbol');
     expect(centerpieceFromSearch('?foo=1&centro=circuitos').id).toBe('circuitos');
-    expect(centerpieceFromSearch('').id).toBe('arbol');
-    expect(centerpieceFromSearch('?centro=nada').id).toBe('arbol');
-    expect(centerpieceFromSearch(undefined).id).toBe('arbol');
+    expect(centerpieceFromSearch('?centro=isotipo').id).toBe('isotipo');
+    expect(centerpieceFromSearch('').id).toBe('edificio');
+    expect(centerpieceFromSearch('?centro=nada').id).toBe('edificio');
+    expect(centerpieceFromSearch(undefined).id).toBe('edificio');
+  });
+
+  it('keeps the building facing the camera at rest (no idle spin)', () => {
+    const building = resolveCenterpiece('edificio').create();
+    expect(building.idleSpin).toBe(false);
+    building.dispose();
+    const tree = resolveCenterpiece('arbol').create();
+    expect(tree.idleSpin).not.toBe(false);
+    tree.dispose();
   });
 });
 

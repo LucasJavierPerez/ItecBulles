@@ -8,16 +8,18 @@ import {
   cameraPlanForStep,
   lerpCameraState,
   overworldRowDistance,
+  BUBBLE_LABEL_OFFSET,
 } from '../app/scene/cameraStates.js';
+import { create as createBuilding } from '../app/scene/centerpieces/building.js';
 import { layoutFor } from '../app/scene/carousel.js';
 import { STEPS } from '../app/stores/ui.js';
 
 describe('camera states', () => {
   it('defines the Projet Bulles named states with their positions', () => {
-    expect(CAMERA_STATES.INTRO_HOME.position).toEqual([0, 3.5, 5.5]);
-    expect(CAMERA_STATES.HOME.position).toEqual([0, 3.5, 4]);
+    expect(CAMERA_STATES.INTRO_HOME.position).toEqual([0, 4, 12]);
+    expect(CAMERA_STATES.HOME.position).toEqual([0, 4, 11]);
     expect(CAMERA_STATES.SKY.position).toEqual([0, 15, 15]);
-    expect(CAMERA_STATES.OVERWORLD.position).toEqual([0, 5, 10]);
+    expect(CAMERA_STATES.OVERWORLD.position).toEqual([0, 4.4, 10]);
   });
 
   it('gives every state a lookAt target', () => {
@@ -135,3 +137,69 @@ describe('OVERWORLD composition', () => {
   }
 });
 
+
+// The iTec building (default centerpiece) in world space, measured from its geometry:
+// roof height with the island bob (±0.08), facade corners at rest, and the farthest
+// roof corner from the island axis (covers any island rotation).
+const BOB = 0.08;
+function buildingFrame() {
+  const piece = createBuilding();
+  piece.object3D.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(piece.object3D);
+  piece.dispose();
+  const [fx, fy, fz] = ISLAND_FOCUS;
+  const top = fy + box.max.y + BOB;
+  const corners = [box.min.x, box.max.x].flatMap((x) => [box.min.z, box.max.z].map((z) => [fx + x, top, fz + z]));
+  const reach = Math.max(...corners.map(([x, , z]) => Math.hypot(x - fx, z - fz)));
+  return { top, base: fy + box.min.y - BOB, corners, reach };
+}
+const toPx = (ndcY, height) => ((1 - ndcY) / 2) * height;
+
+// Hero copy (app.vue home section) measured in the browser: bottom of the last text
+// line ("Mejor con auriculares"), and the top of the practical-info drawer (open on
+// desktop home, compact bar on phones).
+const HOME_VIEWPORTS = {
+  desktop: { aspect: 1440 / 900, height: 900, textBottom: 565, drawerTop: 738 },
+  phone: { aspect: 390 / 844, height: 844, textBottom: 618, drawerTop: 795 },
+};
+
+describe('HOME composition with the iTec building', () => {
+  const building = buildingFrame();
+
+  for (const [name, vp] of Object.entries(HOME_VIEWPORTS)) {
+    for (const stateName of ['HOME', 'INTRO_HOME']) {
+      it(`${name} ${stateName}: building below the hero text, above the drawer, inside the screen`, () => {
+        const state = getCameraState(stateName, vp.aspect);
+        const roof = Math.max(...building.corners.map((p) => project(state, vp.aspect, p).y));
+        const base = project(state, vp.aspect, [ISLAND_FOCUS[0], building.base + BOB, ISLAND_FOCUS[2]]);
+        const side = Math.max(...building.corners.map((p) => Math.abs(project(state, vp.aspect, p).x)));
+        // Calm sky behind the copy: the roof starts at least 16 px under the last line.
+        expect(toPx(roof, vp.height)).toBeGreaterThan(vp.textBottom + 16);
+        expect(toPx(base.y, vp.height)).toBeLessThan(vp.drawerTop);
+        expect(side).toBeLessThan(0.9);
+      });
+    }
+  }
+});
+
+describe('OVERWORLD title pill clears the building roof', () => {
+  const building = buildingFrame();
+  // .bubble-label: one line of 0.95rem * 1.15 plus 0.5rem padding top and bottom.
+  const PILL_HEIGHT = 34;
+  const viewports = { desktop: [1440 / 900, 900], phone: [390 / 844, 844] };
+
+  for (const [name, [aspect, height]] of Object.entries(viewports)) {
+    it(`${name}: pill bottom sits at least 8 px above the roof at any island turn`, () => {
+      const state = getCameraState('OVERWORLD', aspect);
+      const { radius } = layoutFor(aspect, { distance: overworldRowDistance(aspect) });
+      const anchor = project(state, aspect, [BUBBLE_ROW[0], BUBBLE_ROW[1] - radius * BUBBLE_LABEL_OFFSET, BUBBLE_ROW[2]]);
+      let roof = -Infinity;
+      for (let k = 0; k < 32; k += 1) {
+        const a = (k / 32) * Math.PI * 2;
+        const p = [ISLAND_FOCUS[0] + Math.sin(a) * building.reach, building.top, ISLAND_FOCUS[2] + Math.cos(a) * building.reach];
+        roof = Math.max(roof, project(state, aspect, p).y);
+      }
+      expect(toPx(anchor.y, height) + PILL_HEIGHT + 8).toBeLessThan(toPx(roof, height));
+    });
+  }
+});

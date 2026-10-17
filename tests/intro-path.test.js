@@ -69,7 +69,15 @@ describe('intro path', () => {
       overworld.position.forEach((v, i) => expect(end[i]).toBeCloseTo(v, 9));
       const look = targetAt(1, aspect);
       overworld.target.forEach((v, i) => expect(look[i]).toBeCloseTo(v, 9));
-      expect(introPointsFor(aspect).slice(0, -1)).toEqual(INTRO_POINTS.slice(0, -1));
+      expect(introPointsFor(aspect).slice(1, -1)).toEqual(INTRO_POINTS.slice(1, -1));
+    }
+  });
+
+  it('starts exactly at the aspect-framed HOME state (no jump when the flight begins)', () => {
+    for (const aspect of [1440 / 900, 390 / 844]) {
+      const home = getCameraState('HOME', aspect);
+      expect(pointAt(0, introPointsFor(aspect))).toEqual(home.position);
+      targetAt(0, aspect).forEach((v, i) => expect(v).toBeCloseTo(home.target[i], 9));
     }
   });
 });

@@ -208,6 +208,8 @@ export function create() {
     object3D: root,
     // Wide footprint: the island leaves its pebbles out of it.
     blocksPebbles: true,
+    // No idle spin: at rest the facade (and its "iTec" letters) faces the camera.
+    idleSpin: false,
     // A building does not move; only the red dot glows softly.
     update(elapsed) {
       mat.dot.emissiveIntensity = 0.2 + Math.sin(elapsed * 1.6) * 0.12;
