@@ -163,7 +163,7 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
 </header>
 
 <nav class="toc" aria-label="Secciones">
-  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#e005">Entrada 005</a><a href="#e006">Entrada 006</a><a href="#e007">Entrada 007</a><a href="#e008">Entrada 008</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
+  <a href="#prompt">Prompt inicial</a><a href="#e002">Entrada 002</a><a href="#e003">Entradas 003–004</a><a href="#e005">Entrada 005</a><a href="#e006">Entrada 006</a><a href="#e007">Entrada 007</a><a href="#e008">Entrada 008</a><a href="#e009">Entrada 009</a><a href="#tecnica">Bulles por dentro</a><a href="#metodo">Cómo trabajamos</a><a href="#comparativa">Comparativa</a>
   <a href="#hallazgos">Hallazgos iTec</a><a href="#referencia">Qué tomar de Bulles</a><a href="#concepto">Concepto</a>
   <a href="#plan">Plan</a><a href="#decisiones">Decisiones</a>
 </nav>
@@ -238,6 +238,16 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <li><span class="sev l">T11</span><p>Panel de volumen junto al botón Sonido<small>Deslizador de 0 a 100 %, botón de silencio, teclado y nivel guardado para la próxima visita.</small></p></li>
     <li><span class="sev l">T12</span><p>Tres centros intercambiables: edificio, árbol de circuitos y la i de iTec<small>Se eligen con <code>?centro=</code>. Comparación en el lienzo <a href="https://claude.ai/artifact/LBGEXv9Hb3o3oryPZiWAN9">Prototipos centro iTec</a>.</small></p></li>
     <li><span class="sev m">Decisión</span><p>Falta elegir el centro<small>El edificio es el más reconocible pero en el inicio tapa el título; el árbol sigue por defecto.</small></p></li>
+  </ul>
+</section>
+
+<section id="e009">
+  <p class="eyebrow">Entrada 009</p>
+  <h2>El edificio del iTec en el centro</h2>
+  <div class="prompt">el que mejor quedo es el edificio del itec</div>
+  <ul class="findings col">
+    <li><span class="sev l">T13</span><p>El edificio pasa a ser el centro por defecto<small>En el inicio queda debajo del título, con cielo limpio detrás del texto. En las burbujas, la etiqueta no toca el techo y la fachada mira a la cámara.</small></p></li>
+    <li><span class="sev m">A mirar</span><p>En el inicio en escritorio el edificio queda chico<small>La parte baja de la isla queda detrás del panel de información práctica.</small></p></li>
   </ul>
 </section>
 
@@ -396,11 +406,12 @@ footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="dec"><code>D-05</code><span>Lo que usan los alumnos actuales (horarios, calendario, SiTec) pasa al pie del sitio como enlaces secundarios.</span><span class="st prop">propuesta</span></div>
     <div class="dec"><code>D-06</code><span>Botón principal "Quiero + Info" (formulario actual); WhatsApp como contacto secundario.</span><span class="st prop">supuesto</span></div>
     <div class="dec"><code>D-07</code><span>Diseño, tecnología y experiencia de Bulles son la referencia central: Nuxt, three.js, GSAP y Howler.</span><span class="st firm">firme</span></div>
+    <div class="dec"><code>D-09</code><span>El centro de la isla es el edificio del iTec en low-poly (elegido entre 3 prototipos).</span><span class="st firm">firme</span></div>
     <div class="dec"><code>D-08</code><span>Dentro de cada burbuja va la foto real del sitio oficial (antes: ilustración hecha sobre la foto; cambiado en la entrada 007).</span><span class="st firm">firme</span></div>
   </div>
   <div class="next">
     <h3>Próximo paso</h3>
-    <p>Elegir el centro de la isla, confirmar D-02, D-03, D-05 y D-06, y abrir el PR a main.</p>
+    <p>Confirmar D-02, D-03, D-05 y D-06 y abrir el PR a main.</p>
   </div>
 </section>
 
