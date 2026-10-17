@@ -1,0 +1,33 @@
+{
+  "name": "itec-bulles",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Immersive, accessible landing page for iTec Río Cuarto prospective students.",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest run",
+    "bubble-images": "node scripts/bubble-images.mjs",
+    "illustrate": "node scripts/bubble-images.mjs --mode illustration",
+    "sounds": "node scripts/sounds.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "jsdom": "^29.1.1",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^1.0.3",
+    "gsap": "^3.15.0",
+    "howler": "^2.2.4",
+    "nuxt": "^4.5.2",
+    "pinia": "^4.1.0",
+    "three": "^0.186.1",
+    "vue": "^3.5.44"
+  }
+}

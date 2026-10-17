@@ -1,6 +1,9 @@
 node_modules/
-dist/
+dist
 .DS_Store
 coverage/
 .atl/
 .engram/
+.nuxt/
+.output/
+.data/
