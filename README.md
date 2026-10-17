@@ -30,6 +30,21 @@ server rendering adds nothing. `nuxt generate` still produces a static site that
 - `app/assets/css/main.css` — Tailwind v4 tokens (`@theme`): Bulles palette, sky gradient, easings, `btn-pill`.
 - `tests/` — Vitest specs.
 
+## Island centerpiece (prototypes)
+
+The object in the middle of the floating island can be swapped with the URL query
+`?centro=`; it turns with the island while browsing the bubbles.
+
+| Value | Centerpiece |
+|-------|-------------|
+| `arbol` (default) | The original pink low-poly tree. |
+| `edificio` | "Edificio iTec": the real building front (stone facade, green metal band, window ribbon, sign, "iTec" letters, glass door, "783"), from `assets/photos/ingreso-2027.jpg`. |
+| `circuitos` | "Árbol de circuitos": a tree of right-angle circuit traces on a chip, ending in pulsing glowing nodes. |
+| `isotipo` | "La i de iTec": the logo's "i" with a red dot and five career icons orbiting it. |
+
+Unknown values fall back to `arbol`. Code: `app/scene/centerpieces/` (one module per
+centerpiece, each `create()` → `{ object3D, update(elapsed, delta), dispose() }`).
+
 ## Bubble images
 
 Each bubble shows a real photo from the official site, cropped to a square and gently enhanced by a

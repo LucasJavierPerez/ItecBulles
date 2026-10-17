@@ -9,6 +9,9 @@
 //   experience.onTick(fn)       -> fn({ elapsed, delta }) every frame; returns unsubscribe
 //   experience.goTo(name, opts) -> tween the camera to a named state
 //   experience.dispose()        -> frees everything still attached to the scene
+//
+// Options: { centerpiece } picks what stands in the middle of the island (raw
+// `?centro=` value, see centerpieces/index.js); { animate: false } freezes it.
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
@@ -17,6 +20,8 @@ import { createParallax } from './parallax.js';
 import { INTRO_DURATION, introPointsFor, pointAt, targetAt } from './introPath.js';
 import { approachAngle } from './islandTurn.js';
 import { clampPixelRatio } from './renderSettings.js';
+import { mulberry32, jitter, flat } from './lowPoly.js';
+import { resolveCenterpiece } from './centerpieces/index.js';
 
 gsap.registerPlugin(CustomEase);
 // Same curve as the CSS token --ease-bubble: cubic-bezier(.32,.94,.6,1).
@@ -89,36 +94,11 @@ const srgb = (hex) => {
   return new THREE.Vector3(out.r, out.g, out.b);
 };
 
-// Small seeded PRNG so the island looks the same on every load.
-function mulberry32(seed) {
-  let a = seed;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function jitter(geometry, amount, random) {
-  const pos = geometry.attributes.position;
-  // Move shared vertices together so flat shading stays crack-free.
-  const moved = new Map();
-  for (let i = 0; i < pos.count; i += 1) {
-    const key = `${pos.getX(i).toFixed(3)},${pos.getY(i).toFixed(3)},${pos.getZ(i).toFixed(3)}`;
-    if (!moved.has(key)) {
-      moved.set(key, [(random() - 0.5) * amount, (random() - 0.5) * amount, (random() - 0.5) * amount]);
-    }
-    const [dx, dy, dz] = moved.get(key);
-    pos.setXYZ(i, pos.getX(i) + dx, pos.getY(i) + dy, pos.getZ(i) + dz);
-  }
-  geometry.computeVertexNormals();
-  return geometry;
-}
-
 export class Experience {
-  constructor(canvas) {
+  constructor(canvas, { centerpiece = null, animate = true } = {}) {
     this.canvas = canvas;
+    this.centerpieceId = resolveCenterpiece(centerpiece).id;
+    this.animateCenterpiece = animate;
     this.tickHandlers = new Set();
     this.parallax = createParallax();
     this.parallaxEnabled = true;
@@ -312,8 +292,6 @@ export class Experience {
   buildIsland() {
     const island = new THREE.Group();
     island.position.set(...ISLAND_FOCUS);
-    const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.9 });
-
     const rock = new THREE.Mesh(
       jitter(new THREE.ConeGeometry(1.6, 2.2, 9, 3).rotateX(Math.PI), 0.35, this.random),
       flat(0x9b86e6),
@@ -325,37 +303,35 @@ export class Experience {
       flat(0x9fe0bd),
     );
 
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.12, 0.9, 6), flat(0x7a4a6b));
-    trunk.position.set(0.3, 0.55, -0.1);
-
-    const canopy = new THREE.Group();
-    canopy.position.set(0.3, 1.2, -0.1);
-    [
-      [0, 0, 0, 0.5],
-      [0.32, -0.12, 0.1, 0.36],
-      [-0.3, -0.08, -0.05, 0.38],
-      [0.05, 0.3, -0.05, 0.34],
-    ].forEach(([x, y, z, r]) => {
-      const blob = new THREE.Mesh(jitter(new THREE.IcosahedronGeometry(r, 1), 0.06, this.random), flat(0xff94b6));
-      blob.position.set(x, y, z);
-      canopy.add(blob);
-    });
+    // Whatever stands in the middle (tree or a prototype) turns with the island.
+    this.centerpiece = resolveCenterpiece(this.centerpieceId).create();
+    // Pebbles that would poke through a wide centerpiece (the building opts in with
+    // `blocksPebbles`) are skipped; the others keep the original pebble ring.
+    const occupied = new THREE.Box3();
+    if (this.centerpiece.blocksPebbles) {
+      this.centerpiece.object3D.updateMatrixWorld(true);
+      occupied.setFromObject(this.centerpiece.object3D).expandByScalar(0.12);
+    }
 
     for (let i = 0; i < 5; i += 1) {
-      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(0.08 + this.random() * 0.08, 0), flat(0xe1e2fe));
+      const size = 0.08 + this.random() * 0.08;
       const a = this.random() * Math.PI * 2;
-      stone.position.set(Math.cos(a) * 1.1, 0.15, Math.sin(a) * 1.1);
+      const spot = new THREE.Vector3(Math.cos(a) * 1.1, 0.15, Math.sin(a) * 1.1);
+      if (occupied.containsPoint(spot)) continue;
+      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(size, 0), flat(0xe1e2fe));
+      stone.position.copy(spot);
       island.add(stone);
     }
 
-    island.add(rock, grass, trunk, canopy);
+    island.add(rock, grass, this.centerpiece.object3D);
     this.scene.add(island);
     this.island = island;
     this.onTick(({ elapsed, delta }) => {
       island.position.y = ISLAND_FOCUS[1] + Math.sin(elapsed * 0.6) * 0.08;
-      // Slow idle spin plus the eased carousel turn: the bubbles seem to orbit the tree.
+      // Slow idle spin plus the eased carousel turn: the bubbles seem to orbit the centerpiece.
       this.islandAngle = approachAngle(this.islandAngle, this.islandTurn, delta);
       island.rotation.y = elapsed * 0.05 + this.islandAngle;
+      if (this.animateCenterpiece) this.centerpiece.update(elapsed, delta);
     });
   }
 
@@ -476,6 +452,7 @@ export class Experience {
     window.removeEventListener('pointermove', this.onPointerMove);
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.tickHandlers.clear();
+    this.centerpiece?.dispose();
 
     const materials = new Set();
     const geometries = new Set();

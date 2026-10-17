@@ -83,7 +83,12 @@ async function mountScene() {
       import('~/scene/bubbles/BubbleField.js'),
     ]);
     if (!enabled.value || !canvas.value) return;
-    experience = new Experience(canvas.value);
+    // `?centro=arbol|edificio|circuitos|isotipo` swaps the island's centerpiece
+    // (prototypes; resolved inside the lazy scene chunk, unknown values -> tree).
+    experience = new Experience(canvas.value, {
+      centerpiece: new URLSearchParams(window.location.search).get('centro'),
+      animate: !ui.reducedMotion,
+    });
     bubbles = new BubbleField(experience, {
       offers,
       events: sceneEvents,
