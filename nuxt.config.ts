@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-10-16',
   ssr: false,
   devtools: { enabled: false },
+  // Always emit plain static files. Without this, Nitro auto-detects Cloudflare CI and
+  // writes a Worker config with no server entry, which breaks `wrangler deploy`.
+  nitro: { preset: 'static' },
   modules: ['@pinia/nuxt'],
   css: ['~/assets/css/main.css'],
   vite: {
